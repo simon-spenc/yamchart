@@ -63,12 +63,14 @@ export class DuckDBConnector implements Connector {
         }
 
         const typedRows = rows as Array<Record<string, unknown>>;
-        const columns = this.extractColumns(typedRows);
+        // Convert BigInt values to numbers for JSON serialization
+        const serializedRows = typedRows.map((row) => this.serializeRow(row));
+        const columns = this.extractColumns(serializedRows);
 
         resolve({
           columns,
-          rows: typedRows,
-          rowCount: typedRows.length,
+          rows: serializedRows,
+          rowCount: serializedRows.length,
           durationMs,
         });
       });
@@ -96,6 +98,7 @@ export class DuckDBConnector implements Connector {
 
   private inferType(value: unknown): string {
     if (value === null) return 'null';
+    if (typeof value === 'bigint') return 'integer';
     if (typeof value === 'number') {
       return Number.isInteger(value) ? 'integer' : 'number';
     }
@@ -103,5 +106,18 @@ export class DuckDBConnector implements Connector {
     if (typeof value === 'boolean') return 'boolean';
     if (value instanceof Date) return 'date';
     return 'unknown';
+  }
+
+  private serializeRow(row: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(row)) {
+      if (typeof value === 'bigint') {
+        // Convert BigInt to number for JSON serialization
+        result[key] = Number(value);
+      } else {
+        result[key] = value;
+      }
+    }
+    return result;
   }
 }
