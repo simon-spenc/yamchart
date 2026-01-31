@@ -1,20 +1,33 @@
-import Fastify from 'fastify';
+import { createServer } from './server.js';
+import { resolve } from 'path';
 
-const server = Fastify({ logger: true });
+const projectDir = process.env.DASHBOOK_PROJECT_DIR || process.cwd();
+const port = parseInt(process.env.PORT || '3001', 10);
+const watch = process.env.NODE_ENV !== 'production';
 
-server.get('/api/health', async () => {
-  return { status: 'ok', version: '0.1.0' };
-});
-
-const start = async () => {
+async function main() {
   try {
-    const port = parseInt(process.env.PORT || '3001', 10);
-    await server.listen({ port, host: '0.0.0.0' });
-    console.log(`Server listening on http://localhost:${port}`);
-  } catch (err) {
-    server.log.error(err);
+    const server = await createServer({
+      projectDir: resolve(projectDir),
+      port,
+      watch,
+    });
+
+    await server.start();
+
+    // Graceful shutdown
+    const shutdown = async () => {
+      console.log('\nShutting down...');
+      await server.stop();
+      process.exit(0);
+    };
+
+    process.on('SIGINT', shutdown);
+    process.on('SIGTERM', shutdown);
+  } catch (error) {
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
-};
+}
 
-start();
+main();
