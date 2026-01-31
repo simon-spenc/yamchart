@@ -1,0 +1,6 @@
+name: local-duckdb
+type: duckdb
+description: "Local DuckDB for development"
+
+config:
+  path: ./sample-data.duckdb

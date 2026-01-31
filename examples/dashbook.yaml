@@ -1,0 +1,8 @@
+version: "1.0"
+name: example-analytics
+description: "Example Dashbook project for development"
+
+defaults:
+  connection: local-duckdb
+  timezone: UTC
+  cache_ttl: 5m
