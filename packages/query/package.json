@@ -1,0 +1,31 @@
+{
+  "name": "@dashbook/query",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@dashbook/schema": "workspace:*",
+    "nunjucks": "^3.2.4",
+    "date-fns": "^4.1.0",
+    "duckdb": "^1.1.0"
+  },
+  "devDependencies": {
+    "@dashbook/config": "workspace:*",
+    "@types/nunjucks": "^3.2.6",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
