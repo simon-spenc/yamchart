@@ -26,7 +26,7 @@ describe('ModelMetadataSchema', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.params).toHaveLength(3);
-      expect(result.data.params![0].name).toBe('start_date');
+      expect(result.data.params?.[0]?.name).toBe('start_date');
     }
   });
 

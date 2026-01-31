@@ -48,7 +48,7 @@ describe('ChartSchema', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.parameters).toHaveLength(1);
-      expect(result.data.parameters![0].name).toBe('date_range');
+      expect(result.data.parameters?.[0]?.name).toBe('date_range');
     }
   });
 
