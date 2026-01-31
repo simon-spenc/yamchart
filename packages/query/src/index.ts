@@ -5,3 +5,4 @@ export * from './parser.js';
 export * from './presets.js';
 export * from './template.js';
 export * from './compiler.js';
+export * from './connectors/index.js';
