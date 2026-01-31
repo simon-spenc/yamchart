@@ -1,0 +1,13 @@
+{
+  "name": "@dashbook/examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "tsx scripts/seed-data.ts"
+  },
+  "devDependencies": {
+    "duckdb": "^1.1.0",
+    "tsx": "^4.7.0"
+  }
+}

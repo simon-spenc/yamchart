@@ -26,3 +26,6 @@ coverage/
 
 # Dashbook generated
 .dashbook/
+
+# Sample data (generated)
+examples/sample-data.duckdb
