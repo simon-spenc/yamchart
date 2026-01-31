@@ -1,0 +1,30 @@
+{
+  "name": "@dashbook/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@dashbook/schema": "workspace:*",
+    "@dashbook/query": "workspace:*",
+    "fastify": "^5.2.0",
+    "@fastify/cors": "^10.0.0",
+    "yaml": "^2.7.0",
+    "chokidar": "^4.0.0",
+    "lru-cache": "^11.0.0"
+  },
+  "devDependencies": {
+    "@dashbook/config": "workspace:*",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "tsx": "^4.7.0",
+    "vitest": "^2.1.0"
+  }
+}
