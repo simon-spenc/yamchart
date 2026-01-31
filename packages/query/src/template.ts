@@ -77,7 +77,7 @@ export function extractTemplateVariables(template: string): string[] {
   while ((match = regex.exec(template)) !== null) {
     const varName = match[1];
     // Exclude built-in functions
-    if (varName !== 'ref' && varName !== 'loop') {
+    if (varName && varName !== 'ref' && varName !== 'loop') {
       variables.add(varName);
     }
   }

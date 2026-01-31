@@ -58,6 +58,7 @@ export function parseModelMetadata(sql: string): ParseResult {
 
   return {
     ...metadata,
+    name: metadata.name,
     sql: sqlLines.join('\n').trim(),
   };
 }
@@ -119,7 +120,7 @@ function parseMetadataLines(lines: string[]): Partial<ModelMetadata> & { sql?: s
 function parseTags(input: string): string[] {
   // Parse [tag1, tag2, tag3]
   const match = input.match(/\[(.*)\]/);
-  if (!match) return [];
+  if (!match?.[1]) return [];
   return match[1].split(',').map(t => t.trim());
 }
 
@@ -132,6 +133,7 @@ function parseParam(input: string): ModelParam | null {
   if (!match) return null;
 
   const [, name, type, defaultValue, options] = match;
+  if (!name || !type) return null;
 
   const param: ModelParam = {
     name: name.trim(),
@@ -157,6 +159,7 @@ function parseReturnColumn(input: string): ReturnColumn | null {
   if (!match) return null;
 
   const [, name, type, description] = match;
+  if (!name || !type) return null;
 
   const col: ReturnColumn = {
     name: name.trim(),

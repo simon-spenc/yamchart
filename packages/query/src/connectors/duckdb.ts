@@ -1,4 +1,5 @@
 import * as duckdb from 'duckdb';
+import { performance } from 'node:perf_hooks';
 import type { Connector, QueryResult } from './index.js';
 
 export interface DuckDBConfig {

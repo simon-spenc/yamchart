@@ -1,7 +1,7 @@
 import type { Chart, ModelMetadata } from '@dashbook/schema';
 import { renderTemplate, createTemplateContext, type ModelRefs } from './template.js';
 import { expandDatePreset, isDatePreset } from './presets.js';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 
 export interface CompiledQuery {
   sql: string;
