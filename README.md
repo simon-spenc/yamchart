@@ -58,6 +58,83 @@ my-analytics/
     └── executive.yaml
 ```
 
+## Deployment
+
+### Docker
+
+```bash
+# Build image
+docker build -t dashbook:latest .
+
+# Run locally
+docker run -p 8080:8080 dashbook:latest
+
+# Open http://localhost:8080
+```
+
+### Docker Compose
+
+```bash
+# Production-like
+docker-compose up
+
+# Development with hot reload
+docker-compose -f docker-compose.dev.yml up
+```
+
+### Fly.io
+
+1. Install the [Fly CLI](https://fly.io/docs/hands-on/install-flyctl/)
+
+2. Login to Fly.io:
+   ```bash
+   fly auth login
+   ```
+
+3. Deploy:
+   ```bash
+   ./scripts/deploy.sh
+   ```
+
+   Or manually:
+   ```bash
+   fly apps create dashbook
+   fly volumes create dashbook_data --region sjc --size 1
+   fly deploy
+   ```
+
+4. Open your app:
+   ```bash
+   fly open
+   ```
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Server port | `8080` |
+| `HOST` | Bind address | `0.0.0.0` |
+| `NODE_ENV` | Environment | `development` |
+| `DASHBOOK_PROJECT_DIR` | Path to dashbook project | `.` |
+| `LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
+| `DUCKDB_PATH` | Path to DuckDB database | `./sample-data.duckdb` |
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start dev servers (API + Web)
+pnpm dev
+
+# Run tests
+pnpm test
+
+# Build for production
+pnpm build
+```
+
 ## Documentation
 
 - [Technical Specification](./Dashbook%20Technical%20Spec.md)
