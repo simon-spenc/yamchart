@@ -1,17 +1,25 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
 import { ConfigLoader } from './services/config-loader.js';
 import { MemoryCache, parseTtl } from './services/cache.js';
 import { QueryService } from './services/query-service.js';
 import { configRoutes, chartRoutes } from './routes/index.js';
 import { DuckDBConnector, type Connector } from '@dashbook/query';
 import type { DuckDBConnection, ModelMetadata } from '@dashbook/schema';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { access } from 'fs/promises';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export interface ServerOptions {
   projectDir: string;
   port?: number;
   host?: string;
   watch?: boolean;
+  serveStatic?: boolean;
+  staticDir?: string;
 }
 
 export interface DashbookServer {
@@ -22,11 +30,26 @@ export interface DashbookServer {
 }
 
 export async function createServer(options: ServerOptions): Promise<DashbookServer> {
-  const { projectDir, port = 3001, host = '0.0.0.0', watch = false } = options;
+  const {
+    projectDir,
+    port = 3001,
+    host = '0.0.0.0',
+    watch = false,
+    serveStatic = process.env.NODE_ENV === 'production',
+    staticDir = join(__dirname, '../../web/dist'),
+  } = options;
 
   // Initialize Fastify
-  const fastify = Fastify({ logger: true });
-  await fastify.register(cors, { origin: true });
+  const fastify = Fastify({
+    logger: {
+      level: process.env.LOG_LEVEL || 'info',
+    },
+  });
+
+  // CORS only needed in development (when web is separate)
+  if (!serveStatic) {
+    await fastify.register(cors, { origin: true });
+  }
 
   // Load config
   const configLoader = new ConfigLoader(projectDir);
@@ -72,7 +95,6 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
   }
 
   // Add base table refs (assume table names match for MVP)
-  // In production, this would come from schema introspection
   refs['orders'] = 'orders';
   refs['customers'] = 'customers';
   refs['products'] = 'products';
@@ -85,15 +107,40 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
     refs,
   });
 
-  // Register routes
+  // Register API routes
   fastify.get('/api/health', async () => ({
     status: 'ok',
     version: '0.1.0',
     project: project.name,
+    environment: process.env.NODE_ENV || 'development',
   }));
 
   await fastify.register(configRoutes, { configLoader });
   await fastify.register(chartRoutes, { configLoader, queryService });
+
+  // Serve static files in production
+  if (serveStatic) {
+    try {
+      await access(staticDir);
+      await fastify.register(fastifyStatic, {
+        root: staticDir,
+        prefix: '/',
+        decorateReply: false,
+      });
+
+      // SPA fallback - serve index.html for non-API routes
+      fastify.setNotFoundHandler(async (request, reply) => {
+        if (request.url.startsWith('/api/')) {
+          return reply.status(404).send({ error: 'Not found' });
+        }
+        return reply.sendFile('index.html');
+      });
+
+      fastify.log.info(`Serving static files from ${staticDir}`);
+    } catch {
+      fastify.log.warn(`Static directory not found: ${staticDir}`);
+    }
+  }
 
   // Setup file watching for hot reload
   if (watch) {
@@ -110,17 +157,18 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
     configLoader,
     start: async () => {
       await fastify.listen({ port, host });
+      const mode = serveStatic ? 'Production' : 'Development';
       console.log(`
   ┌─────────────────────────────────────────┐
   │                                         │
   │   Dashbook Server v0.1.0                │
   │                                         │
-  │   API:     http://localhost:${String(port).padEnd(13)}│
+  │   URL:     http://${host}:${port}         │
   │   Project: ${project.name.padEnd(27)}│
+  │   Mode:    ${mode.padEnd(27)}│
   │                                         │
   │   Charts:  ${String(configLoader.getCharts().length).padEnd(27)}│
   │   Models:  ${String(configLoader.getModels().length).padEnd(27)}│
-  │   Connection: ${(defaultConnection.name + ' (' + defaultConnection.type + ')').padEnd(22)}│
   │                                         │
   └─────────────────────────────────────────┘
       `);
