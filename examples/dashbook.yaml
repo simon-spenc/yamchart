@@ -3,7 +3,7 @@ name: dashbook-examples
 description: "Example Dashbook project"
 
 defaults:
-  connection: ${DASHBOOK_CONNECTION:-local-duckdb}
+  connection: local-duckdb
   timezone: UTC
   cache_ttl: 5m
 
