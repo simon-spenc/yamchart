@@ -1,8 +1,14 @@
 version: "1.0"
-name: example-analytics
-description: "Example Dashbook project for development"
+name: dashbook-examples
+description: "Example Dashbook project"
 
 defaults:
-  connection: local-duckdb
+  connection: ${DASHBOOK_CONNECTION:-local-duckdb}
   timezone: UTC
   cache_ttl: 5m
+
+environments:
+  development:
+    connection: local-duckdb
+  production:
+    connection: production-duckdb

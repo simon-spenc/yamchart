@@ -3,4 +3,5 @@ type: duckdb
 description: "Local DuckDB for development"
 
 config:
-  path: ./sample-data.duckdb
+  # Use environment variable with fallback
+  path: ${DUCKDB_PATH:-./sample-data.duckdb}

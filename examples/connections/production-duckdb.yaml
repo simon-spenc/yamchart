@@ -1,0 +1,7 @@
+name: production-duckdb
+type: duckdb
+description: "Production DuckDB with persistent storage"
+
+config:
+  # Stored on Fly.io volume
+  path: /data/dashbook.duckdb
