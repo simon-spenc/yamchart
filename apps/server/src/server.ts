@@ -7,11 +7,17 @@ import { QueryService } from './services/query-service.js';
 import { configRoutes, chartRoutes } from './routes/index.js';
 import { DuckDBConnector, type Connector } from '@dashbook/query';
 import type { DuckDBConnection, ModelMetadata } from '@dashbook/schema';
+import { initAuthServer, authMiddleware, orgMiddleware } from './middleware/index.js';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { access } from 'fs/promises';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export interface AuthConfig {
+  supabaseUrl: string;
+  supabaseServiceKey: string;
+}
 
 export interface ServerOptions {
   projectDir: string;
@@ -20,6 +26,7 @@ export interface ServerOptions {
   watch?: boolean;
   serveStatic?: boolean;
   staticDir?: string;
+  auth?: AuthConfig;
 }
 
 export interface DashbookServer {
@@ -37,7 +44,13 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
     watch = false,
     serveStatic = process.env.NODE_ENV === 'production',
     staticDir = join(__dirname, '../../web/dist'),
+    auth,
   } = options;
+
+  // Initialize auth if configured
+  if (auth) {
+    initAuthServer(auth.supabaseUrl, auth.supabaseServiceKey);
+  }
 
   // Initialize Fastify
   const fastify = Fastify({
@@ -115,8 +128,22 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
     environment: process.env.NODE_ENV || 'development',
   }));
 
-  await fastify.register(configRoutes, { configLoader });
-  await fastify.register(chartRoutes, { configLoader, queryService });
+  // Config and chart routes
+  // When auth is enabled, these can be wrapped in protected routes
+  if (auth) {
+    // Protected routes - require authentication and org membership
+    await fastify.register(async (protectedRoutes) => {
+      protectedRoutes.addHook('preHandler', authMiddleware);
+      protectedRoutes.addHook('preHandler', orgMiddleware);
+
+      await protectedRoutes.register(configRoutes, { configLoader });
+      await protectedRoutes.register(chartRoutes, { configLoader, queryService });
+    });
+  } else {
+    // Public routes - no auth required (development/local mode)
+    await fastify.register(configRoutes, { configLoader });
+    await fastify.register(chartRoutes, { configLoader, queryService });
+  }
 
   // Serve static files in production
   if (serveStatic) {

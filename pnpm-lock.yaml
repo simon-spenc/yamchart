@@ -17,6 +17,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@dashbook/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@dashbook/query':
         specifier: workspace:*
         version: link:../../packages/query
@@ -60,6 +63,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@dashbook/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@tanstack/react-query':
         specifier: ^5.62.0
         version: 5.90.20(react@18.3.1)

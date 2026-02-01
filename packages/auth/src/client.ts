@@ -1,6 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 import type { User, Org, Session, Membership } from './types.js';
 
+// Browser storage helper - works in both browser and SSR
+function getStorage() {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return window.localStorage;
+  }
+  return null;
+}
+
+// Get window location origin safely
+function getOrigin(): string {
+  if (typeof window !== 'undefined' && window.location) {
+    return window.location.origin;
+  }
+  return '';
+}
+
 export function createAuthClient(supabaseUrl: string, supabaseAnonKey: string) {
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -31,7 +47,7 @@ export function createAuthClient(supabaseUrl: string, supabaseAnonKey: string) {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${getOrigin()}/auth/callback`,
         },
       });
       if (error) throw error;
@@ -63,18 +79,18 @@ export function createAuthClient(supabaseUrl: string, supabaseAnonKey: string) {
         `)
         .eq('user_id', user.id);
 
-      const orgs = (memberships || []).map((m: { role: string; org: Org }) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const orgs = (memberships || []).map((m: any) => ({
         ...m.org,
         role: m.role as Membership['role'],
       }));
 
       // Get current org from localStorage or first org
-      const currentOrgId = typeof window !== 'undefined'
-        ? localStorage.getItem('currentOrgId')
-        : null;
-      const currentOrg = orgs.find((o) => o.id === currentOrgId) || orgs[0] || null;
+      const storage = getStorage();
+      const currentOrgId = storage?.getItem('currentOrgId') ?? null;
+      const currentOrg = orgs.find((o: Org) => o.id === currentOrgId) || orgs[0] || null;
       const currentRole = currentOrg
-        ? orgs.find((o) => o.id === currentOrg.id)?.role || null
+        ? orgs.find((o: Org & { role: Membership['role'] }) => o.id === currentOrg.id)?.role || null
         : null;
 
       return {
@@ -92,9 +108,8 @@ export function createAuthClient(supabaseUrl: string, supabaseAnonKey: string) {
     },
 
     async switchOrg(orgId: string) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('currentOrgId', orgId);
-      }
+      const storage = getStorage();
+      storage?.setItem('currentOrgId', orgId);
     },
 
     // Org methods
@@ -142,7 +157,7 @@ export function createAuthClient(supabaseUrl: string, supabaseAnonKey: string) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const token = crypto.randomUUID();
+      const token = globalThis.crypto.randomUUID();
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
 

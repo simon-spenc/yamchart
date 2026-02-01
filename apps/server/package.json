@@ -13,6 +13,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@dashbook/auth": "workspace:*",
     "@dashbook/schema": "workspace:*",
     "@dashbook/query": "workspace:*",
     "fastify": "^5.2.0",
