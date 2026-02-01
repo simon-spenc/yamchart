@@ -5,7 +5,9 @@
   "description": "Git-native business intelligence dashboards",
   "scripts": {
     "build": "turbo build",
+    "build:prod": "turbo build --filter=@dashbook/server --filter=@dashbook/web",
     "dev": "turbo dev",
+    "start": "node apps/server/dist/index.js",
     "lint": "turbo lint",
     "test": "turbo test",
     "clean": "turbo clean && rm -rf node_modules"
