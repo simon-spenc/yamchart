@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed": "tsx scripts/seed-data.ts"
+    "seed": "tsx scripts/seed-data.ts",
+    "seed:prod": "DUCKDB_PATH=/data/dashbook.duckdb tsx scripts/seed-data.ts"
   },
   "devDependencies": {
     "duckdb": "^1.1.0",

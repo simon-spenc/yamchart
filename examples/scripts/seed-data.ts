@@ -3,7 +3,11 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dbPath = join(__dirname, '..', 'sample-data.duckdb');
+
+// Support custom path via env var or argument
+const dbPath = process.env.DUCKDB_PATH
+  || process.argv[2]
+  || join(__dirname, '..', 'sample-data.duckdb');
 
 console.log(`Creating sample database at: ${dbPath}`);
 
