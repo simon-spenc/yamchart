@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs (we build in Docker)
+dist/
+.turbo/
+*.tsbuildinfo
+
+# Development
+.git/
+.gitignore
+.env*
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage/
+*.test.ts
+*.spec.ts
+__tests__/
+
+# Docs (not needed in image)
+docs/
+*.md
+!README.md
+
+# Local data
+examples/sample-data.duckdb
+.dashbook/
