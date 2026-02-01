@@ -3,7 +3,7 @@ import { createAuthServer, type AuthServer } from '@dashbook/auth/server';
 
 let authServer: AuthServer | null = null;
 
-export function initAuthServer(supabaseUrl: string, supabaseServiceKey: string) {
+export function initAuthServer(supabaseUrl: string, supabaseServiceKey: string): AuthServer {
   authServer = createAuthServer(supabaseUrl, supabaseServiceKey);
   return authServer;
 }
