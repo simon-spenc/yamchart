@@ -58,7 +58,7 @@ export function LineChart({
       formatter: (params: unknown) => {
         const p = params as Array<{ name: string; value: number; marker: string }>;
         if (!Array.isArray(p) || p.length === 0) return '';
-        const point = p[0];
+        const point = p[0]!;
         return `
           <div style="padding: 8px;">
             <div style="font-weight: 600; margin-bottom: 4px;">${point.name}</div>
