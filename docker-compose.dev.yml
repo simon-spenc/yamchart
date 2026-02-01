@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  dashbook-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    command: pnpm --filter @dashbook/server dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - HOST=0.0.0.0
+      - DASHBOOK_PROJECT_DIR=/app/examples
+    volumes:
+      - ./apps/server/src:/app/apps/server/src
+      - ./packages:/app/packages
+      - ./examples:/app/examples
+    working_dir: /app
+
+  dashbook-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    command: pnpm --filter @dashbook/web dev --host
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./apps/web/src:/app/apps/web/src
+    working_dir: /app
+    depends_on:
+      - dashbook-server
