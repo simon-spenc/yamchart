@@ -4,7 +4,10 @@
 # ============================================
 
 # Stage 1: Build
-FROM node:22-alpine AS builder
+FROM node:22-slim AS builder
+
+# Install required build tools
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
@@ -34,14 +37,17 @@ COPY packages/ ./packages/
 RUN pnpm build
 
 # Stage 2: Production
-FROM node:22-alpine AS production
+FROM node:22-slim AS production
+
+# Install curl for healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 # Create non-root user
-RUN addgroup -g 1001 -S dashbook && \
-    adduser -S dashbook -u 1001 -G dashbook
+RUN groupadd -g 1001 dashbook && \
+    useradd -u 1001 -g dashbook -m dashbook
 
 WORKDIR /app
 
@@ -88,7 +94,7 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
+  CMD curl -f http://localhost:8080/api/health || exit 1
 
 # Start server
 CMD ["node", "apps/server/dist/index.js"]
