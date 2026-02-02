@@ -82,4 +82,30 @@ program
     process.exit(result.success ? 0 : 1);
   });
 
+program
+  .command('dev')
+  .description('Start development server with hot reload')
+  .argument('[path]', 'Path to dashbook project', '.')
+  .option('-p, --port <number>', 'Port to listen on', '3001')
+  .option('--api-only', 'Only serve API, no web UI')
+  .option('--no-open', 'Do not open browser automatically')
+  .action(async (path: string, options: { port: string; apiOnly?: boolean; open: boolean }) => {
+    const startPath = resolve(path);
+    const projectDir = await findProjectRoot(startPath);
+
+    if (!projectDir) {
+      output.error('dashbook.yaml not found');
+      output.detail('Run this command from a dashbook project directory');
+      process.exit(2);
+    }
+
+    const { runDevServer } = await import('./commands/dev.js');
+
+    await runDevServer(projectDir, {
+      port: parseInt(options.port, 10),
+      apiOnly: options.apiOnly ?? false,
+      open: options.open,
+    });
+  });
+
 program.parse();
