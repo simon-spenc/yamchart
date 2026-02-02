@@ -5,3 +5,4 @@ export * from './connection.js';
 export * from './chart.js';
 export * from './project.js';
 export * from './model.js';
+export * from './dashboard.js';

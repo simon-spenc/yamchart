@@ -116,3 +116,64 @@ describe('ChartSchema', () => {
     expect(result.success).toBe(false);
   });
 });
+
+describe('KPI Chart', () => {
+  it('validates a KPI chart with comparison', () => {
+    const kpiChart = {
+      name: 'revenue-kpi',
+      title: 'Total Revenue',
+      source: { model: 'total_revenue' },
+      chart: {
+        type: 'kpi',
+        value: { field: 'value' },
+        format: { type: 'currency', currency: 'USD' },
+        comparison: {
+          enabled: true,
+          field: 'previous_value',
+          label: 'vs last period',
+          type: 'percent_change',
+        },
+      },
+    };
+
+    const result = ChartSchema.safeParse(kpiChart);
+    expect(result.success).toBe(true);
+  });
+
+  it('validates a KPI chart without comparison', () => {
+    const kpiChart = {
+      name: 'users-kpi',
+      title: 'Active Users',
+      source: { model: 'active_users' },
+      chart: {
+        type: 'kpi',
+        value: { field: 'count' },
+        format: { type: 'number' },
+      },
+    };
+
+    const result = ChartSchema.safeParse(kpiChart);
+    expect(result.success).toBe(true);
+  });
+
+  it('validates KPI with absolute comparison', () => {
+    const kpiChart = {
+      name: 'orders-kpi',
+      title: 'Orders',
+      source: { model: 'total_orders' },
+      chart: {
+        type: 'kpi',
+        value: { field: 'value' },
+        format: { type: 'number' },
+        comparison: {
+          enabled: true,
+          field: 'previous_value',
+          type: 'absolute',
+        },
+      },
+    };
+
+    const result = ChartSchema.safeParse(kpiChart);
+    expect(result.success).toBe(true);
+  });
+});

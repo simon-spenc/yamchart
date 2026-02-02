@@ -195,4 +195,77 @@ config:
     loader = new ConfigLoader(testDir);
     await expect(loader.load()).rejects.toThrow('dashbook.yaml not found');
   });
+
+  describe('dashboard loading', () => {
+    it('loads dashboards from dashboards directory', async () => {
+      await writeFile(
+        join(testDir, 'dashbook.yaml'),
+        'version: "1.0"\nname: test'
+      );
+      await mkdir(join(testDir, 'dashboards'), { recursive: true });
+      await writeFile(
+        join(testDir, 'dashboards', 'executive.yaml'),
+        `
+name: executive
+title: Executive Overview
+layout:
+  rows:
+    - height: 400
+      widgets:
+        - type: chart
+          ref: revenue-trend
+          cols: 12
+`
+      );
+
+      loader = new ConfigLoader(testDir);
+      await loader.load();
+
+      const dashboards = loader.getDashboards();
+      expect(dashboards).toHaveLength(1);
+      expect(dashboards[0]?.name).toBe('executive');
+    });
+
+    it('getDashboardByName returns specific dashboard', async () => {
+      await writeFile(
+        join(testDir, 'dashbook.yaml'),
+        'version: "1.0"\nname: test'
+      );
+      await mkdir(join(testDir, 'dashboards'), { recursive: true });
+      await writeFile(
+        join(testDir, 'dashboards', 'metrics.yaml'),
+        `
+name: metrics
+title: Key Metrics
+layout:
+  rows:
+    - height: 120
+      widgets:
+        - type: chart
+          ref: kpi
+          cols: 12
+`
+      );
+
+      loader = new ConfigLoader(testDir);
+      await loader.load();
+
+      const dashboard = loader.getDashboardByName('metrics');
+      expect(dashboard).toBeDefined();
+      expect(dashboard?.title).toBe('Key Metrics');
+    });
+
+    it('returns undefined for non-existent dashboard', async () => {
+      await writeFile(
+        join(testDir, 'dashbook.yaml'),
+        'version: "1.0"\nname: test'
+      );
+
+      loader = new ConfigLoader(testDir);
+      await loader.load();
+
+      const dashboard = loader.getDashboardByName('nonexistent');
+      expect(dashboard).toBeUndefined();
+    });
+  });
 });

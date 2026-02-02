@@ -3,6 +3,11 @@ import type {
   ProjectConfig,
   ChartDefinition,
   QueryResponse,
+  DashboardSummary,
+  Dashboard,
+  DashboardLayout,
+  BranchesResponse,
+  SaveDashboardResponse,
 } from './types';
 
 const API_BASE = '/api';
@@ -57,6 +62,41 @@ export const api = {
   invalidateChart: (name: string): Promise<{ success: boolean }> =>
     fetchJson(`/charts/${encodeURIComponent(name)}/invalidate`, {
       method: 'POST',
+    }),
+
+  // Dashboards
+  getDashboards: (): Promise<DashboardSummary[]> => fetchJson('/dashboards'),
+
+  getDashboard: (id: string, branch?: string): Promise<Dashboard> => {
+    const url = branch
+      ? `/dashboards/${encodeURIComponent(id)}?branch=${encodeURIComponent(branch)}`
+      : `/dashboards/${encodeURIComponent(id)}`;
+    return fetchJson(url);
+  },
+
+  saveDashboard: (
+    id: string,
+    layout: DashboardLayout,
+    message?: string
+  ): Promise<SaveDashboardResponse> =>
+    fetchJson(`/dashboards/${encodeURIComponent(id)}`, {
+      method: 'POST',
+      body: JSON.stringify({ layout, message }),
+    }),
+
+  // Git operations
+  getBranches: (): Promise<BranchesResponse> => fetchJson('/git/branches'),
+
+  createBranch: (name: string, from?: string): Promise<{ success: boolean; branch: string }> =>
+    fetchJson('/git/branches', {
+      method: 'POST',
+      body: JSON.stringify({ name, from }),
+    }),
+
+  checkoutBranch: (branch: string): Promise<{ success: boolean; branch: string }> =>
+    fetchJson('/git/checkout', {
+      method: 'POST',
+      body: JSON.stringify({ branch }),
     }),
 };
 

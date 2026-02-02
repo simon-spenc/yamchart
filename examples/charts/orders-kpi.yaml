@@ -1,0 +1,15 @@
+name: orders-kpi
+title: Orders
+source:
+  model: total_orders
+chart:
+  type: kpi
+  value:
+    field: value
+  format:
+    type: number
+  comparison:
+    enabled: true
+    field: previous_value
+    label: vs last month
+    type: percent_change

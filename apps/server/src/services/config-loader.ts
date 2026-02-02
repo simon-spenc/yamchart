@@ -6,9 +6,11 @@ import {
   ProjectSchema,
   ConnectionSchema,
   ChartSchema,
+  DashboardSchema,
   type Project,
   type Connection,
   type Chart,
+  type Dashboard,
   type ModelMetadata,
 } from '@dashbook/schema';
 import { parseModelMetadata } from '@dashbook/query';
@@ -25,6 +27,7 @@ export class ConfigLoader {
   private connections: Map<string, Connection> = new Map();
   private charts: Map<string, Chart> = new Map();
   private models: Map<string, LoadedModel> = new Map();
+  private dashboards: Map<string, Dashboard> = new Map();
   private watcher: FSWatcher | null = null;
   private onChangeCallbacks: Array<() => void> = [];
 
@@ -37,6 +40,7 @@ export class ConfigLoader {
     await this.loadConnections();
     await this.loadCharts();
     await this.loadModels();
+    await this.loadDashboards();
   }
 
   private async loadProject(): Promise<void> {
@@ -150,6 +154,33 @@ export class ConfigLoader {
     }
   }
 
+  private async loadDashboards(): Promise<void> {
+    const dashboardsDir = join(this.projectDir, 'dashboards');
+
+    try {
+      await access(dashboardsDir);
+    } catch {
+      return; // No dashboards directory is ok
+    }
+
+    const files = await readdir(dashboardsDir);
+
+    for (const file of files) {
+      if (extname(file) !== '.yaml' && extname(file) !== '.yml') continue;
+
+      const filePath = join(dashboardsDir, file);
+      const content = await readFile(filePath, 'utf-8');
+      const parsed = parseYaml(content);
+      const result = DashboardSchema.safeParse(parsed);
+
+      if (result.success) {
+        this.dashboards.set(result.data.name, result.data);
+      } else {
+        console.warn(`Invalid dashboard file ${file}: ${result.error.message}`);
+      }
+    }
+  }
+
   startWatching(): void {
     if (this.watcher) return;
 
@@ -180,6 +211,7 @@ export class ConfigLoader {
       this.connections.clear();
       this.charts.clear();
       this.models.clear();
+      this.dashboards.clear();
       await this.load();
 
       for (const callback of this.onChangeCallbacks) {
@@ -239,5 +271,13 @@ export class ConfigLoader {
     }
     // Return first connection if no default specified
     return this.connections.values().next().value;
+  }
+
+  getDashboards(): Dashboard[] {
+    return Array.from(this.dashboards.values());
+  }
+
+  getDashboardByName(name: string): Dashboard | undefined {
+    return this.dashboards.get(name);
   }
 }

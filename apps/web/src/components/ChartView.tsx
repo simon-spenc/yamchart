@@ -42,6 +42,13 @@ export function ChartView({ chartName }: ChartViewProps) {
 
     switch (chartDef.chart.type) {
       case 'line':
+        if (!chartDef.chart.x || !chartDef.chart.y) {
+          return (
+            <div className="h-80 flex items-center justify-center text-gray-500">
+              Missing axis configuration
+            </div>
+          );
+        }
         return (
           <LineChart
             data={chartData.rows}

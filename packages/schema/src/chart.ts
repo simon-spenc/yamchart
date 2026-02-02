@@ -64,8 +64,36 @@ const InteractionsSchema = z.object({
   brush: z.boolean().default(false),
 });
 
-// Chart visualization config
-const ChartConfigSchema = z.object({
+// KPI format types
+const KpiFormatSchema = z.object({
+  type: z.enum(['number', 'currency', 'percent']),
+  currency: z.string().optional(), // e.g., 'USD', 'EUR'
+  decimals: z.number().optional(),
+});
+
+// KPI comparison configuration
+const KpiComparisonSchema = z.object({
+  enabled: z.boolean(),
+  field: z.string().min(1),
+  label: z.string().optional(),
+  type: z.enum(['percent_change', 'absolute']),
+});
+
+// KPI value configuration
+const KpiValueSchema = z.object({
+  field: z.string().min(1),
+});
+
+// KPI-specific config
+const KpiConfigSchema = z.object({
+  type: z.literal('kpi'),
+  value: KpiValueSchema,
+  format: KpiFormatSchema,
+  comparison: KpiComparisonSchema.optional(),
+});
+
+// Standard chart config (existing)
+const StandardChartConfigSchema = z.object({
   type: ChartTypeSchema,
   x: AxisSchema,
   y: AxisSchema,
@@ -73,6 +101,12 @@ const ChartConfigSchema = z.object({
   annotations: z.array(AnnotationSchema).optional(),
   interactions: InteractionsSchema.optional(),
 });
+
+// Chart visualization config - either standard or KPI
+const ChartConfigSchema = z.union([
+  StandardChartConfigSchema,
+  KpiConfigSchema,
+]);
 
 // Parameter types
 const ParameterTypeSchema = z.enum([

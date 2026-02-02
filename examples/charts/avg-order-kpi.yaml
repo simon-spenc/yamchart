@@ -1,0 +1,16 @@
+name: avg-order-kpi
+title: Avg Order Value
+source:
+  model: avg_order_value
+chart:
+  type: kpi
+  value:
+    field: value
+  format:
+    type: currency
+    currency: USD
+  comparison:
+    enabled: true
+    field: previous_value
+    label: vs last month
+    type: percent_change

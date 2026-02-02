@@ -1,0 +1,16 @@
+name: revenue-kpi
+title: Total Revenue
+source:
+  model: total_revenue
+chart:
+  type: kpi
+  value:
+    field: value
+  format:
+    type: currency
+    currency: USD
+  comparison:
+    enabled: true
+    field: previous_value
+    label: vs last month
+    type: percent_change

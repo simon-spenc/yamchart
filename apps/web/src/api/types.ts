@@ -34,14 +34,23 @@ export interface AxisConfig {
 }
 
 export interface ChartConfig {
-  type: 'line' | 'bar' | 'area' | 'scatter' | 'pie' | 'table' | 'metric';
-  x: AxisConfig;
-  y: AxisConfig;
+  type: 'line' | 'bar' | 'area' | 'scatter' | 'pie' | 'table' | 'metric' | 'kpi';
+  x?: AxisConfig;
+  y?: AxisConfig;
   series?: Array<{
     field: string;
     name?: string;
     color?: string;
   }>;
+  // KPI-specific fields
+  value?: { field: string };
+  format?: { type: string; currency?: string; decimals?: number };
+  comparison?: {
+    enabled: boolean;
+    field: string;
+    label?: string;
+    type: 'percent_change' | 'absolute';
+  };
 }
 
 export interface ChartDefinition {
@@ -73,4 +82,46 @@ export interface HealthResponse {
   status: 'ok' | 'error';
   version: string;
   project: string;
+}
+
+// Dashboard Types
+
+export interface DashboardWidget {
+  type: 'chart' | 'text';
+  ref?: string;
+  content?: string;
+  cols: number;
+}
+
+export interface DashboardRow {
+  height: number;
+  widgets: DashboardWidget[];
+}
+
+export interface DashboardLayout {
+  gap?: number;
+  rows: DashboardRow[];
+}
+
+export interface DashboardSummary {
+  name: string;
+  title: string;
+  description?: string;
+}
+
+export interface Dashboard extends DashboardSummary {
+  filters?: string[];
+  layout: DashboardLayout;
+  branch: string;
+}
+
+export interface BranchesResponse {
+  current: string;
+  branches: string[];
+}
+
+export interface SaveDashboardResponse {
+  success: boolean;
+  commit?: string;
+  branch?: string;
 }

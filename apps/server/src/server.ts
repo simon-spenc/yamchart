@@ -4,7 +4,8 @@ import fastifyStatic from '@fastify/static';
 import { ConfigLoader } from './services/config-loader.js';
 import { MemoryCache, parseTtl } from './services/cache.js';
 import { QueryService } from './services/query-service.js';
-import { configRoutes, chartRoutes } from './routes/index.js';
+import { configRoutes, chartRoutes, dashboardRoutes } from './routes/index.js';
+import { GitService } from './services/git-service.js';
 import { DuckDBConnector, type Connector } from '@dashbook/query';
 import type { DuckDBConnection, ModelMetadata } from '@dashbook/schema';
 import { initAuthServer, authMiddleware, orgMiddleware } from './middleware/index.js';
@@ -67,6 +68,9 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
   // Load config
   const configLoader = new ConfigLoader(projectDir);
   await configLoader.load();
+
+  // Initialize Git service
+  const gitService = new GitService(projectDir);
 
   // Get default connection and create connector
   const defaultConnection = configLoader.getDefaultConnection();
@@ -138,11 +142,13 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
 
       await protectedRoutes.register(configRoutes, { configLoader });
       await protectedRoutes.register(chartRoutes, { configLoader, queryService });
+      await protectedRoutes.register(dashboardRoutes, { configLoader, gitService, projectDir });
     });
   } else {
     // Public routes - no auth required (development/local mode)
     await fastify.register(configRoutes, { configLoader });
     await fastify.register(chartRoutes, { configLoader, queryService });
+    await fastify.register(dashboardRoutes, { configLoader, gitService, projectDir });
   }
 
   // Serve static files in production
