@@ -25,6 +25,10 @@ export interface ValidationResult {
     passed: number;
     failed: number;
   };
+  dryRunStats?: {
+    passed: number;
+    failed: number;
+  };
 }
 
 export interface ValidateOptions {
@@ -192,6 +196,12 @@ export async function validateProject(
   // Phase 2: Cross-reference validation
   crossReferenceValidation(config, errors, warnings);
 
+  // Phase 3: Dry-run query validation (if enabled)
+  let dryRunStats: { passed: number; failed: number } | undefined;
+  if (options.dryRun) {
+    dryRunStats = await dryRunValidation(projectDir, config, options.connection, errors);
+  }
+
   return {
     success: errors.length === 0,
     errors,
@@ -201,6 +211,7 @@ export async function validateProject(
       passed: filesPassed,
       failed: filesChecked - filesPassed,
     },
+    dryRunStats,
   };
 }
 
@@ -304,4 +315,78 @@ function levenshtein(a: string, b: string): number {
   }
 
   return matrix[b.length]![a.length]!;
+}
+
+async function dryRunValidation(
+  projectDir: string,
+  config: LoadedConfig,
+  connectionName: string | undefined,
+  errors: ValidationError[]
+): Promise<{ passed: number; failed: number }> {
+  const { DuckDBConnector } = await import('@dashbook/query');
+
+  let passed = 0;
+  let failed = 0;
+
+  // Determine which connection to use
+  const connName = connectionName || config.project?.defaults?.connection;
+  if (!connName) {
+    errors.push({
+      file: 'dashbook.yaml',
+      message: 'No connection specified for dry-run (use --connection or set defaults.connection)',
+    });
+    return { passed, failed: 1 };
+  }
+
+  const connection = config.connections.get(connName);
+  if (!connection) {
+    errors.push({
+      file: 'dashbook.yaml',
+      message: `Connection "${connName}" not found`,
+    });
+    return { passed, failed: 1 };
+  }
+
+  // Only DuckDB supported for now
+  if (connection.type !== 'duckdb') {
+    errors.push({
+      file: `connections/${connName}.yaml`,
+      message: `Dry-run not yet supported for connection type "${connection.type}"`,
+    });
+    return { passed, failed: 1 };
+  }
+
+  // Load full connection config to get path
+  const connPath = join(projectDir, 'connections', `${connName}.yaml`);
+  const connContent = await readFile(connPath, 'utf-8');
+  const connConfig = parseYaml(connContent) as { config: { path: string } };
+
+  // Resolve path relative to project
+  const dbPath = connConfig.config.path.startsWith('/')
+    ? connConfig.config.path
+    : join(projectDir, connConfig.config.path);
+
+  const connector = new DuckDBConnector({ path: dbPath });
+
+  try {
+    await connector.connect();
+
+    for (const [modelName, model] of config.models) {
+      const result = await connector.explain(model.sql);
+
+      if (result.valid) {
+        passed++;
+      } else {
+        failed++;
+        errors.push({
+          file: `models/${modelName}.sql`,
+          message: result.error || 'Query validation failed',
+        });
+      }
+    }
+  } finally {
+    await connector.disconnect();
+  }
+
+  return { passed, failed };
 }

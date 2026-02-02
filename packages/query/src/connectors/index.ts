@@ -12,6 +12,7 @@ export interface Connector {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
   execute(sql: string): Promise<QueryResult>;
+  explain(sql: string): Promise<{ valid: boolean; error?: string }>;
   isConnected(): boolean;
 }
 

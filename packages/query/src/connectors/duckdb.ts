@@ -81,6 +81,22 @@ export class DuckDBConnector implements Connector {
     return this.connection !== null;
   }
 
+  async explain(sql: string): Promise<{ valid: boolean; error?: string }> {
+    if (!this.connection) {
+      throw new Error('Not connected to database');
+    }
+
+    return new Promise((resolve) => {
+      this.connection!.all(`EXPLAIN ${sql}`, (err) => {
+        if (err) {
+          resolve({ valid: false, error: err.message });
+        } else {
+          resolve({ valid: true });
+        }
+      });
+    });
+  }
+
   private extractColumns(rows: Array<Record<string, unknown>>): QueryResult['columns'] {
     if (rows.length === 0) {
       return [];

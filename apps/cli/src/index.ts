@@ -70,6 +70,15 @@ program
         output.error(`Schema: ${result.stats.passed} passed, ${result.stats.failed} failed`);
       }
 
+      if (result.dryRunStats) {
+        output.newline();
+        if (result.dryRunStats.failed === 0) {
+          output.success(`Queries: ${result.dryRunStats.passed} passed (EXPLAIN OK)`);
+        } else {
+          output.error(`Queries: ${result.dryRunStats.passed} passed, ${result.dryRunStats.failed} failed`);
+        }
+      }
+
       output.newline();
 
       if (result.success) {
