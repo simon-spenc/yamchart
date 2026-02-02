@@ -3,11 +3,10 @@ title: Executive Overview
 description: Key business metrics at a glance
 filters:
   - date_range
-
 layout:
   gap: 16
   rows:
-    - height: 120
+    - height: 100
       widgets:
         - type: chart
           ref: revenue-kpi
@@ -21,13 +20,12 @@ layout:
         - type: chart
           ref: avg-order-kpi
           cols: 3
-    - height: 400
+    - height: 100
       widgets:
         - type: chart
           ref: revenue-trend
           cols: 8
         - type: text
-          cols: 4
           content: |
             ## Revenue Notes
 
@@ -37,3 +35,4 @@ layout:
             - Excludes taxes
             - Includes shipping fees
             - Updated daily at midnight UTC
+          cols: 4

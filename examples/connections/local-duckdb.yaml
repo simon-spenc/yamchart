@@ -3,4 +3,4 @@ type: duckdb
 description: "Local DuckDB for development"
 
 config:
-  path: examples/sample-data.duckdb
+  path: sample-data.duckdb
