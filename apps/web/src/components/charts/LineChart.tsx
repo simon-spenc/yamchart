@@ -12,6 +12,23 @@ interface LineChartProps {
   loading?: boolean;
 }
 
+// Convert strftime format to date-fns format
+function strftimeToDateFns(strftimeFormat: string): string {
+  return strftimeFormat
+    .replace(/%Y/g, 'yyyy')    // 4-digit year
+    .replace(/%y/g, 'yy')      // 2-digit year
+    .replace(/%m/g, 'MM')      // Month number
+    .replace(/%b/g, 'MMM')     // Abbreviated month
+    .replace(/%B/g, 'MMMM')    // Full month
+    .replace(/%d/g, 'dd')      // Day of month
+    .replace(/%H/g, 'HH')      // Hour 24h
+    .replace(/%I/g, 'hh')      // Hour 12h
+    .replace(/%M/g, 'mm')      // Minutes
+    .replace(/%S/g, 'ss')      // Seconds
+    .replace(/%p/g, 'a')       // AM/PM
+    .replace(/%P/g, 'a');      // am/pm
+}
+
 export function LineChart({
   data,
   xAxis,
@@ -25,7 +42,10 @@ export function LineChart({
     if (xAxis.type === 'temporal' && typeof value === 'string') {
       try {
         const date = parseISO(value);
-        return format(date, xAxis.format || 'MMM yyyy');
+        const dateFormat = xAxis.format
+          ? strftimeToDateFns(xAxis.format)
+          : 'MMM yyyy';
+        return format(date, dateFormat);
       } catch {
         return value;
       }

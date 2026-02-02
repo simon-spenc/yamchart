@@ -1,14 +1,25 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { api } from '../api/client';
 import { useFilterStore } from '../stores/filterStore';
 
 export function useChartData(chartName: string) {
-  const getEffectiveFilters = useFilterStore((s) => s.getEffectiveFilters);
-  const filters = getEffectiveFilters(chartName);
+  // Subscribe to both global and chart-specific filters for reactivity
+  const globalFilters = useFilterStore((s) => s.globalFilters);
+  const chartFilters = useFilterStore((s) => s.chartFilters);
+
+  // Merge filters (chart filters override global)
+  const filters = useMemo(() => ({
+    ...globalFilters,
+    ...chartFilters[chartName],
+  }), [globalFilters, chartFilters, chartName]);
 
   // Remove null/undefined values from filters
-  const cleanFilters = Object.fromEntries(
-    Object.entries(filters).filter(([_, v]) => v != null)
+  const cleanFilters = useMemo(() =>
+    Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v != null)
+    ),
+    [filters]
   );
 
   return useQuery({
