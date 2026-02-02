@@ -15,9 +15,12 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/server/package.json ./apps/server/
 COPY apps/web/package.json ./apps/web/
-COPY packages/config/package.json ./packages/config/
+# Copy entire config package (contains static tsconfig files needed at install time)
+COPY packages/config/ ./packages/config/
 COPY packages/schema/package.json ./packages/schema/
 COPY packages/query/package.json ./packages/query/
+COPY packages/auth/package.json ./packages/auth/
+COPY packages/billing/package.json ./packages/billing/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -48,6 +51,8 @@ COPY apps/server/package.json ./apps/server/
 COPY packages/config/package.json ./packages/config/
 COPY packages/schema/package.json ./packages/schema/
 COPY packages/query/package.json ./packages/query/
+COPY packages/auth/package.json ./packages/auth/
+COPY packages/billing/package.json ./packages/billing/
 
 # Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
@@ -57,6 +62,8 @@ COPY --from=builder /app/apps/server/dist ./apps/server/dist
 COPY --from=builder /app/apps/web/dist ./apps/web/dist
 COPY --from=builder /app/packages/schema/dist ./packages/schema/dist
 COPY --from=builder /app/packages/query/dist ./packages/query/dist
+COPY --from=builder /app/packages/auth/dist ./packages/auth/dist
+COPY --from=builder /app/packages/billing/dist ./packages/billing/dist
 
 # Copy examples (default project)
 COPY examples/ ./examples/
