@@ -26,7 +26,8 @@
     "commander": "^12.1.0",
     "dotenv": "^16.4.0",
     "ora": "^8.0.0",
-    "picocolors": "^1.1.0"
+    "picocolors": "^1.1.0",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "@dashbook/config": "workspace:*",
