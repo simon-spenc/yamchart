@@ -38,3 +38,6 @@ coverage/
 
 # Sample data (generated)
 examples/sample-data.duckdb
+
+# Git worktrees
+.worktrees/
