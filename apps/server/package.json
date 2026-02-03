@@ -1,8 +1,20 @@
 {
   "name": "@yamchart/server",
   "version": "0.1.0",
-  "private": true,
+  "description": "Yamchart server - Fastify API for Git-native BI dashboards",
   "type": "module",
+  "license": "MIT",
+  "author": "Simon Spencer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simon-spenc/yamchart.git",
+    "directory": "apps/server"
+  },
+  "homepage": "https://github.com/simon-spenc/yamchart#readme",
+  "bugs": {
+    "url": "https://github.com/simon-spenc/yamchart/issues"
+  },
+  "keywords": ["yamchart", "bi", "dashboards", "fastify", "server"],
   "main": "./dist/exports.js",
   "exports": {
     ".": {
@@ -37,5 +49,11 @@
     "tsx": "^4.7.0",
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
