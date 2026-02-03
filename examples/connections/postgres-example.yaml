@@ -1,0 +1,27 @@
+name: postgres-example
+description: Example PostgreSQL connection configuration
+type: postgres
+
+config:
+  host: localhost
+  port: 5432
+  database: mydb
+  schema: public  # optional, defaults to public
+  ssl: false      # set to true for production
+
+# Authentication via environment variables (recommended)
+auth:
+  type: env
+  user_var: PG_USER
+  password_var: PG_PASSWORD
+
+# Optional connection pool settings
+pool:
+  min_connections: 2
+  max_connections: 10
+  idle_timeout: 30000  # milliseconds
+
+# Optional query settings
+query:
+  timeout: 30000  # milliseconds
+  max_rows: 10000
