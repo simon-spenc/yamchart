@@ -17,3 +17,5 @@ export interface Connector {
 }
 
 export * from './duckdb.js';
+export * from './postgres.js';
+export * from './auth.js';

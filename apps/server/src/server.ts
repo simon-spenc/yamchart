@@ -6,8 +6,8 @@ import { MemoryCache, parseTtl } from './services/cache.js';
 import { QueryService } from './services/query-service.js';
 import { configRoutes, chartRoutes, dashboardRoutes } from './routes/index.js';
 import { GitService } from './services/git-service.js';
-import { DuckDBConnector, type Connector } from '@dashbook/query';
-import type { DuckDBConnection, ModelMetadata } from '@dashbook/schema';
+import { DuckDBConnector, PostgresConnector, resolvePostgresAuth, type Connector } from '@dashbook/query';
+import type { DuckDBConnection, PostgresConnection, ModelMetadata } from '@dashbook/schema';
 import { initAuthServer, authMiddleware, orgMiddleware } from './middleware/index.js';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -82,6 +82,24 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
   if (defaultConnection.type === 'duckdb') {
     const duckdbConfig = defaultConnection as DuckDBConnection;
     connector = new DuckDBConnector({ path: duckdbConfig.config.path });
+    await connector.connect();
+  } else if (defaultConnection.type === 'postgres') {
+    const pgConnection = defaultConnection as PostgresConnection;
+    const credentials = resolvePostgresAuth(pgConnection);
+
+    connector = new PostgresConnector({
+      host: pgConnection.config.host,
+      port: pgConnection.config.port,
+      database: pgConnection.config.database,
+      schema: pgConnection.config.schema,
+      ssl: pgConnection.config.ssl,
+      user: credentials.user,
+      password: credentials.password,
+      min: pgConnection.pool?.min_connections,
+      max: pgConnection.pool?.max_connections,
+      idleTimeoutMillis: pgConnection.pool?.idle_timeout,
+      statementTimeout: pgConnection.query?.timeout,
+    });
     await connector.connect();
   } else {
     throw new Error(`Unsupported connection type: ${defaultConnection.type}`);
