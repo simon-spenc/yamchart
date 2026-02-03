@@ -1,4 +1,4 @@
-# Dashbook
+# Yamchart
 
 Open-source, Git-native business intelligence dashboards defined entirely through code.
 
@@ -22,7 +22,7 @@ chart:
     format: "$,.0f"
 ```
 
-## Why Dashbook?
+## Why Yamchart?
 
 - **Git-native:** Dashboards are code. Review in PRs, version in Git, deploy via CI/CD.
 - **No vendor lock-in:** Your analytics live in your repo, not a SaaS database.
@@ -33,21 +33,21 @@ chart:
 
 ```bash
 # Install
-npm install -g dashbook
+npm install -g yamchart
 
 # Create a new project
-dashbook init my-analytics
+yamchart init my-analytics
 cd my-analytics
 
 # Start development server
-dashbook dev
+yamchart dev
 ```
 
 ## Project Structure
 
 ```
 my-analytics/
-├── dashbook.yaml          # Project configuration
+├── yamchart.yaml          # Project configuration
 ├── connections/           # Data source definitions
 │   └── local-duckdb.yaml
 ├── models/                # SQL models with parameters
@@ -64,10 +64,10 @@ my-analytics/
 
 ```bash
 # Build image
-docker build -t dashbook:latest .
+docker build -t yamchart:latest .
 
 # Run locally
-docker run -p 8080:8080 dashbook:latest
+docker run -p 8080:8080 yamchart:latest
 
 # Open http://localhost:8080
 ```
@@ -98,8 +98,8 @@ docker-compose -f docker-compose.dev.yml up
 
    Or manually:
    ```bash
-   fly apps create dashbook
-   fly volumes create dashbook_data --region sjc --size 1
+   fly apps create yamchart
+   fly volumes create yamchart_data --region sjc --size 1
    fly deploy
    ```
 
@@ -115,7 +115,7 @@ docker-compose -f docker-compose.dev.yml up
 | `PORT` | Server port | `8080` |
 | `HOST` | Bind address | `0.0.0.0` |
 | `NODE_ENV` | Environment | `development` |
-| `DASHBOOK_PROJECT_DIR` | Path to dashbook project | `.` |
+| `YAMCHART_PROJECT_DIR` | Path to yamchart project | `.` |
 | `LOG_LEVEL` | Log level (debug, info, warn, error) | `info` |
 | `DUCKDB_PATH` | Path to DuckDB database | `./sample-data.duckdb` |
 
@@ -137,7 +137,7 @@ pnpm build
 
 ## Documentation
 
-- [Technical Specification](./Dashbook%20Technical%20Spec.md)
+- [Technical Specification](./Yamchart%20Technical%20Spec.md)
 - [MVP Architecture Design](./docs/plans/2026-01-31-mvp-architecture-design.md)
 
 ## Status
