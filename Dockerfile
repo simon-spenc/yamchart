@@ -1,5 +1,5 @@
 # ============================================
-# Dashbook Production Dockerfile
+# Yamchart Production Dockerfile
 # Multi-stage build for minimal image size
 # ============================================
 
@@ -46,8 +46,8 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 
 # Create non-root user
-RUN groupadd -g 1001 dashbook && \
-    useradd -u 1001 -g dashbook -m dashbook
+RUN groupadd -g 1001 yamchart && \
+    useradd -u 1001 -g yamchart -m yamchart
 
 WORKDIR /app
 
@@ -75,18 +75,18 @@ COPY --from=builder /app/packages/billing/dist ./packages/billing/dist
 COPY examples/ ./examples/
 
 # Create data directory for DuckDB
-RUN mkdir -p /data && chown -R dashbook:dashbook /data
+RUN mkdir -p /data && chown -R yamchart:yamchart /data
 
 # Set ownership
-RUN chown -R dashbook:dashbook /app
+RUN chown -R yamchart:yamchart /app
 
-USER dashbook
+USER yamchart
 
 # Environment variables
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOST=0.0.0.0
-ENV DASHBOOK_PROJECT_DIR=/app/examples
+ENV YAMCHART_PROJECT_DIR=/app/examples
 ENV LOG_LEVEL=info
 
 # Expose port
