@@ -1,5 +1,5 @@
 {
-  "name": "@dashbook/auth",
+  "name": "@yamchart/auth",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -26,7 +26,7 @@
     "@supabase/supabase-js": "^2.47.0"
   },
   "devDependencies": {
-    "@dashbook/config": "workspace:*",
+    "@yamchart/config": "workspace:*",
     "typescript": "^5.7.0"
   }
 }

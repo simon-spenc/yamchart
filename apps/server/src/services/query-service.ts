@@ -3,8 +3,8 @@ import {
   type Connector,
   type QueryResult,
   type CompilerConfig,
-} from '@dashbook/query';
-import type { Chart } from '@dashbook/schema';
+} from '@yamchart/query';
+import type { Chart } from '@yamchart/schema';
 import type { CacheProvider, CachedQueryResult } from './cache.js';
 
 export interface ChartQueryResult extends QueryResult {

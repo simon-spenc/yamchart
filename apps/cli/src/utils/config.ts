@@ -3,7 +3,7 @@ import { join, dirname, resolve } from 'path';
 import { config as loadDotenv } from 'dotenv';
 
 /**
- * Find the project root by looking for dashbook.yaml.
+ * Find the project root by looking for yamchart.yaml.
  * Searches current directory and parent directories.
  */
 export async function findProjectRoot(startDir: string): Promise<string | null> {
@@ -11,7 +11,7 @@ export async function findProjectRoot(startDir: string): Promise<string | null> 
   const root = dirname(currentDir);
 
   while (currentDir !== root) {
-    const configPath = join(currentDir, 'dashbook.yaml');
+    const configPath = join(currentDir, 'yamchart.yaml');
     try {
       await access(configPath);
       return currentDir;
@@ -22,7 +22,7 @@ export async function findProjectRoot(startDir: string): Promise<string | null> 
 
   // Check root directory too
   try {
-    await access(join(root, 'dashbook.yaml'));
+    await access(join(root, 'yamchart.yaml'));
     return root;
   } catch {
     return null;

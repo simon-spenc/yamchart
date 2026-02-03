@@ -13,7 +13,7 @@ describe('Dashboard Routes', () => {
   let app: ReturnType<typeof Fastify>;
 
   beforeAll(async () => {
-    testDir = join(tmpdir(), `dashbook-dashboard-test-${Date.now()}`);
+    testDir = join(tmpdir(), `yamchart-dashboard-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
 
     // Init git repo
@@ -22,9 +22,9 @@ describe('Dashboard Routes', () => {
     await git.addConfig('user.email', 'test@test.com');
     await git.addConfig('user.name', 'Test User');
 
-    // Create dashbook.yaml
+    // Create yamchart.yaml
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       `
 name: test-project
 version: "1.0"

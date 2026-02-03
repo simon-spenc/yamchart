@@ -1,5 +1,5 @@
 {
-  "name": "@dashbook/schema",
+  "name": "@yamchart/schema",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -20,7 +20,7 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@dashbook/config": "workspace:*",
+    "@yamchart/config": "workspace:*",
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
   }

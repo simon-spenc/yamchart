@@ -12,8 +12,8 @@ import {
   type Chart,
   type Dashboard,
   type ModelMetadata,
-} from '@dashbook/schema';
-import { parseModelMetadata } from '@dashbook/query';
+} from '@yamchart/schema';
+import { parseModelMetadata } from '@yamchart/query';
 
 export interface LoadedModel {
   metadata: ModelMetadata;
@@ -44,12 +44,12 @@ export class ConfigLoader {
   }
 
   private async loadProject(): Promise<void> {
-    const projectPath = join(this.projectDir, 'dashbook.yaml');
+    const projectPath = join(this.projectDir, 'yamchart.yaml');
 
     try {
       await access(projectPath);
     } catch {
-      throw new Error('dashbook.yaml not found');
+      throw new Error('yamchart.yaml not found');
     }
 
     const content = await readFile(projectPath, 'utf-8');
@@ -57,7 +57,7 @@ export class ConfigLoader {
     const result = ProjectSchema.safeParse(parsed);
 
     if (!result.success) {
-      throw new Error(`Invalid dashbook.yaml: ${result.error.message}`);
+      throw new Error(`Invalid yamchart.yaml: ${result.error.message}`);
     }
 
     this.project = result.data;

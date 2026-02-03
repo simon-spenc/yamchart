@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { QueryCompiler } from '../compiler.js';
-import type { Chart } from '@dashbook/schema';
+import type { Chart } from '@yamchart/schema';
 
 describe('QueryCompiler', () => {
   let compiler: QueryCompiler;

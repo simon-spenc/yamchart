@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vites
 import { QueryCompiler } from '../compiler.js';
 import { parseModelMetadata } from '../parser.js';
 import { DuckDBConnector } from '../connectors/duckdb.js';
-import type { Chart } from '@dashbook/schema';
+import type { Chart } from '@yamchart/schema';
 
 describe('Query Engine Integration', () => {
   let connector: DuckDBConnector;

@@ -11,7 +11,7 @@ describe('GitService', () => {
 
   beforeEach(async () => {
     // Create temp directory with git repo
-    testDir = join(tmpdir(), `dashbook-git-test-${Date.now()}`);
+    testDir = join(tmpdir(), `yamchart-git-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
 
     // Init git repo

@@ -3,7 +3,7 @@ import { createServer, type DashbookServer } from '../server.js';
 import { mkdir, writeFile, rm } from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { DuckDBConnector } from '@dashbook/query';
+import { DuckDBConnector } from '@yamchart/query';
 
 describe('Server Integration', () => {
   let testDir: string;
@@ -12,7 +12,7 @@ describe('Server Integration', () => {
 
   beforeAll(async () => {
     // Create temp project directory
-    testDir = join(tmpdir(), `dashbook-server-test-${Date.now()}`);
+    testDir = join(tmpdir(), `yamchart-server-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
     await mkdir(join(testDir, 'connections'), { recursive: true });
     await mkdir(join(testDir, 'models'), { recursive: true });
@@ -42,7 +42,7 @@ describe('Server Integration', () => {
 
     // Write config files
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       `
 version: "1.0"
 name: integration-test

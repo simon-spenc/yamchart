@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { createAuthServer, type AuthServer } from '@dashbook/auth/server';
+import { createAuthServer, type AuthServer } from '@yamchart/auth/server';
 
 let authServer: AuthServer | null = null;
 

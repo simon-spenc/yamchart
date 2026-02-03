@@ -1,11 +1,11 @@
 {
-  "name": "dashbook",
+  "name": "yamchart",
   "version": "0.1.0",
   "private": true,
   "description": "Git-native business intelligence dashboards",
   "scripts": {
     "build": "turbo build",
-    "build:prod": "turbo build --filter=@dashbook/server --filter=@dashbook/web",
+    "build:prod": "turbo build --filter=@yamchart/server --filter=@yamchart/web",
     "dev": "turbo dev",
     "start": "node apps/server/dist/index.js",
     "lint": "turbo lint",

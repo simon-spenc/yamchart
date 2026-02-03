@@ -1,4 +1,4 @@
-import { createServer, type DashbookServer } from '@dashbook/server';
+import { createServer, type DashbookServer } from '@yamchart/server';
 import * as output from '../utils/output.js';
 import { validateProject } from './validate.js';
 import { loadEnvFile } from '../utils/config.js';

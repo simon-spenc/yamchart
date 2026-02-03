@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { resolvePostgresAuth } from '../../connectors/auth.js';
-import type { PostgresConnection } from '@dashbook/schema';
+import type { PostgresConnection } from '@yamchart/schema';
 
 describe('resolvePostgresAuth', () => {
   const originalEnv = process.env;

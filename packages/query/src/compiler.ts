@@ -1,4 +1,4 @@
-import type { Chart, ModelMetadata } from '@dashbook/schema';
+import type { Chart, ModelMetadata } from '@yamchart/schema';
 import { renderTemplate, createTemplateContext, type ModelRefs } from './template.js';
 import { expandDatePreset, isDatePreset } from './presets.js';
 import { createHash } from 'node:crypto';

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { QueryService } from '../services/query-service.js';
 import { MemoryCache } from '../services/cache.js';
-import { DuckDBConnector } from '@dashbook/query';
-import type { Chart } from '@dashbook/schema';
+import { DuckDBConnector } from '@yamchart/query';
+import type { Chart } from '@yamchart/schema';
 
 describe('QueryService', () => {
   let queryService: QueryService;

@@ -8,7 +8,7 @@ describe('findProjectRoot', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = join(tmpdir(), `dashbook-cli-test-${Date.now()}`);
+    testDir = join(tmpdir(), `yamchart-cli-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
   });
 
@@ -16,15 +16,15 @@ describe('findProjectRoot', () => {
     await rm(testDir, { recursive: true, force: true });
   });
 
-  it('finds dashbook.yaml in current directory', async () => {
-    await writeFile(join(testDir, 'dashbook.yaml'), 'version: "1.0"\nname: test');
+  it('finds yamchart.yaml in current directory', async () => {
+    await writeFile(join(testDir, 'yamchart.yaml'), 'version: "1.0"\nname: test');
 
     const result = await findProjectRoot(testDir);
     expect(result).toBe(testDir);
   });
 
-  it('finds dashbook.yaml in parent directory', async () => {
-    await writeFile(join(testDir, 'dashbook.yaml'), 'version: "1.0"\nname: test');
+  it('finds yamchart.yaml in parent directory', async () => {
+    await writeFile(join(testDir, 'yamchart.yaml'), 'version: "1.0"\nname: test');
     const subDir = join(testDir, 'sub');
     await mkdir(subDir);
 
@@ -32,7 +32,7 @@ describe('findProjectRoot', () => {
     expect(result).toBe(testDir);
   });
 
-  it('returns null when no dashbook.yaml found', async () => {
+  it('returns null when no yamchart.yaml found', async () => {
     const result = await findProjectRoot(testDir);
     expect(result).toBeNull();
   });

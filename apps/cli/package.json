@@ -1,10 +1,10 @@
 {
-  "name": "dashbook",
+  "name": "yamchart",
   "version": "0.1.0",
   "description": "Git-native business intelligence dashboards",
   "type": "module",
   "bin": {
-    "dashbook": "./bin/dashbook"
+    "yamchart": "./bin/yamchart"
   },
   "exports": {
     ".": {
@@ -20,9 +20,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@dashbook/query": "workspace:*",
-    "@dashbook/schema": "workspace:*",
-    "@dashbook/server": "workspace:*",
+    "@yamchart/query": "workspace:*",
+    "@yamchart/schema": "workspace:*",
+    "@yamchart/server": "workspace:*",
     "commander": "^12.1.0",
     "dotenv": "^16.4.0",
     "ora": "^8.0.0",
@@ -30,7 +30,7 @@
     "yaml": "^2.7.0"
   },
   "devDependencies": {
-    "@dashbook/config": "workspace:*",
+    "@yamchart/config": "workspace:*",
     "@types/node": "^22.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.7.0",

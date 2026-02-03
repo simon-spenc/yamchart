@@ -6,8 +6,8 @@ import { MemoryCache, parseTtl } from './services/cache.js';
 import { QueryService } from './services/query-service.js';
 import { configRoutes, chartRoutes, dashboardRoutes } from './routes/index.js';
 import { GitService } from './services/git-service.js';
-import { DuckDBConnector, PostgresConnector, resolvePostgresAuth, type Connector } from '@dashbook/query';
-import type { DuckDBConnection, PostgresConnection, ModelMetadata } from '@dashbook/schema';
+import { DuckDBConnector, PostgresConnector, resolvePostgresAuth, type Connector } from '@yamchart/query';
+import type { DuckDBConnection, PostgresConnection, ModelMetadata } from '@yamchart/schema';
 import { initAuthServer, authMiddleware, orgMiddleware } from './middleware/index.js';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -216,7 +216,7 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
       console.log(`
   ┌─────────────────────────────────────────┐
   │                                         │
-  │   Dashbook Server v0.1.0                │
+  │   Yamchart Server v0.1.0                │
   │                                         │
   │   URL:     http://${host}:${port}         │
   │   Project: ${project.name.padEnd(27)}│

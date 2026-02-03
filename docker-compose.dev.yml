@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder
-    command: pnpm --filter @dashbook/server dev
+    command: pnpm --filter @yamchart/server dev
     ports:
       - "3001:3001"
     environment:
@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder
-    command: pnpm --filter @dashbook/web dev --host
+    command: pnpm --filter @yamchart/web dev --host
     ports:
       - "3000:3000"
     environment:

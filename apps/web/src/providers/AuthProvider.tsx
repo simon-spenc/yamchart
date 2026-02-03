@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { createAuthClient, type AuthClient, type Session } from '@dashbook/auth';
+import { createAuthClient, type AuthClient, type Session } from '@yamchart/auth';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;

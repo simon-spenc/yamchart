@@ -1,5 +1,5 @@
 {
-  "name": "@dashbook/billing",
+  "name": "@yamchart/billing",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -18,7 +18,7 @@
     "stripe": "^17.0.0"
   },
   "devDependencies": {
-    "@dashbook/config": "workspace:*",
+    "@yamchart/config": "workspace:*",
     "typescript": "^5.7.0"
   }
 }

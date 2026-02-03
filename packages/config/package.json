@@ -1,5 +1,5 @@
 {
-  "name": "@dashbook/config",
+  "name": "@yamchart/config",
   "version": "0.1.0",
   "private": true,
   "exports": {

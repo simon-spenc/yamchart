@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Dashbook is an open-source, Git-native framework for defining and deploying BI dashboards through code. Users write YAML configs and SQL models; Dashbook compiles, executes, and renders interactive dashboards.
+Yamchart is an open-source, Git-native framework for defining and deploying BI dashboards through code. Users write YAML configs and SQL models; Yamchart compiles, executes, and renders interactive dashboards.
 
 **Core principle:** If it's not in Git, it doesn't exist.
 
@@ -13,16 +13,16 @@ Dashbook is an open-source, Git-native framework for defining and deploying BI d
 TypeScript monorepo with pnpm + Turborepo:
 
 ```
-dashbook/
+yamchart/
 ├── apps/
-│   ├── cli/        # CLI tool (dashbook validate, dev, init)
+│   ├── cli/        # CLI tool (yamchart validate, dev, init)
 │   ├── server/     # Fastify API server
 │   └── web/        # React + Vite dashboard viewer
 ├── packages/
 │   ├── schema/     # Zod schemas, shared TypeScript types
 │   ├── query/      # SQL compilation, Nunjucks templating
 │   └── config/     # Shared tsconfig, eslint configs
-└── examples/       # Sample dashbook project with DuckDB
+└── examples/       # Sample yamchart project with DuckDB
 ```
 
 ## Technology Stack
@@ -48,8 +48,8 @@ chart.yaml → resolve model → parse params → apply date presets → render 
 
 ## User Config Files
 
-Users create these files in their dashbook projects:
-- `dashbook.yaml` - project config, default connection
+Users create these files in their yamchart projects:
+- `yamchart.yaml` - project config, default connection
 - `connections/*.yaml` - data source definitions
 - `models/*.sql` - SQL with Jinja templating and metadata in comments
 - `charts/*.yaml` - chart definitions referencing models
@@ -58,4 +58,4 @@ Users create these files in their dashbook projects:
 ## Design Documents
 
 - `docs/plans/2026-01-31-mvp-architecture-design.md` - Full MVP architecture design
-- `Dashbook Technical Spec.md` - Complete product specification
+- `Yamchart Technical Spec.md` - Complete product specification

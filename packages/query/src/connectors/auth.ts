@@ -1,4 +1,4 @@
-import type { PostgresConnection } from '@dashbook/schema';
+import type { PostgresConnection } from '@yamchart/schema';
 
 export interface ResolvedCredentials {
   user: string;

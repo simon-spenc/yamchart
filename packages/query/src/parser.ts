@@ -1,4 +1,4 @@
-import type { ModelMetadata, ModelParam, ReturnColumn } from '@dashbook/schema';
+import type { ModelMetadata, ModelParam, ReturnColumn } from '@yamchart/schema';
 
 export interface ParsedModel {
   metadata: ModelMetadata;

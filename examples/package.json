@@ -1,11 +1,11 @@
 {
-  "name": "@dashbook/examples",
+  "name": "@yamchart/examples",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "seed": "tsx scripts/seed-data.ts",
-    "seed:prod": "DUCKDB_PATH=/data/dashbook.duckdb tsx scripts/seed-data.ts"
+    "seed:prod": "DUCKDB_PATH=/data/yamchart.duckdb tsx scripts/seed-data.ts"
   },
   "devDependencies": {
     "duckdb": "^1.1.0",

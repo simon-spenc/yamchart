@@ -8,7 +8,7 @@ describe('initProject', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = join(tmpdir(), `dashbook-init-test-${Date.now()}`);
+    testDir = join(tmpdir(), `yamchart-init-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
   });
 
@@ -23,7 +23,7 @@ describe('initProject', () => {
       const result = await initProject(projectDir, {});
 
       expect(result.success).toBe(true);
-      expect(result.files).toContain('dashbook.yaml');
+      expect(result.files).toContain('yamchart.yaml');
       expect(result.files).toContain('connections/local.yaml');
       expect(result.files).toContain('models/sample_orders.sql');
       expect(result.files).toContain('charts/revenue-by-day.yaml');
@@ -34,7 +34,7 @@ describe('initProject', () => {
 
       await initProject(projectDir, {});
 
-      const content = await readFile(join(projectDir, 'dashbook.yaml'), 'utf-8');
+      const content = await readFile(join(projectDir, 'yamchart.yaml'), 'utf-8');
       expect(content).toContain('name: my-project');
       expect(content).not.toContain('{{name}}');
     });
@@ -81,13 +81,13 @@ describe('initProject', () => {
   });
 
   describe('--empty mode', () => {
-    it('creates only dashbook.yaml', async () => {
+    it('creates only yamchart.yaml', async () => {
       const projectDir = join(testDir, 'empty-project');
 
       const result = await initProject(projectDir, { empty: true });
 
       expect(result.success).toBe(true);
-      expect(result.files).toEqual(['dashbook.yaml']);
+      expect(result.files).toEqual(['yamchart.yaml']);
     });
 
     it('replaces {{name}} with project name', async () => {
@@ -95,7 +95,7 @@ describe('initProject', () => {
 
       await initProject(projectDir, { empty: true });
 
-      const content = await readFile(join(projectDir, 'dashbook.yaml'), 'utf-8');
+      const content = await readFile(join(projectDir, 'yamchart.yaml'), 'utf-8');
       expect(content).toContain('name: empty-project');
       expect(content).not.toContain('{{name}}');
     });
@@ -105,7 +105,7 @@ describe('initProject', () => {
 
       await initProject(projectDir, { empty: true });
 
-      const content = await readFile(join(projectDir, 'dashbook.yaml'), 'utf-8');
+      const content = await readFile(join(projectDir, 'yamchart.yaml'), 'utf-8');
       expect(content).toContain('# default_connection:');
     });
   });
@@ -117,19 +117,19 @@ describe('initProject', () => {
       const result = await initProject(projectDir, { example: true });
 
       expect(result.success).toBe(true);
-      expect(result.files).toContain('dashbook.yaml');
+      expect(result.files).toContain('yamchart.yaml');
       // Example project should have models, charts, connections
       expect(result.files.some(f => f.startsWith('models/'))).toBe(true);
       expect(result.files.some(f => f.startsWith('charts/'))).toBe(true);
       expect(result.files.some(f => f.startsWith('connections/'))).toBe(true);
     });
 
-    it('updates project name in dashbook.yaml', async () => {
+    it('updates project name in yamchart.yaml', async () => {
       const projectDir = join(testDir, 'my-example');
 
       await initProject(projectDir, { example: true });
 
-      const content = await readFile(join(projectDir, 'dashbook.yaml'), 'utf-8');
+      const content = await readFile(join(projectDir, 'yamchart.yaml'), 'utf-8');
       expect(content).toContain('name: my-example');
     });
 
@@ -145,10 +145,10 @@ describe('initProject', () => {
   });
 
   describe('error handling', () => {
-    it('fails if dashbook.yaml already exists', async () => {
+    it('fails if yamchart.yaml already exists', async () => {
       const projectDir = join(testDir, 'existing-project');
       await mkdir(projectDir, { recursive: true });
-      await writeFile(join(projectDir, 'dashbook.yaml'), 'existing');
+      await writeFile(join(projectDir, 'yamchart.yaml'), 'existing');
 
       const result = await initProject(projectDir, {});
 
@@ -156,10 +156,10 @@ describe('initProject', () => {
       expect(result.error).toContain('already exists');
     });
 
-    it('succeeds with --force even if dashbook.yaml exists', async () => {
+    it('succeeds with --force even if yamchart.yaml exists', async () => {
       const projectDir = join(testDir, 'existing-project');
       await mkdir(projectDir, { recursive: true });
-      await writeFile(join(projectDir, 'dashbook.yaml'), 'existing');
+      await writeFile(join(projectDir, 'yamchart.yaml'), 'existing');
 
       const result = await initProject(projectDir, { force: true });
 
@@ -169,11 +169,11 @@ describe('initProject', () => {
     it('overwrites existing files with --force', async () => {
       const projectDir = join(testDir, 'existing-project');
       await mkdir(projectDir, { recursive: true });
-      await writeFile(join(projectDir, 'dashbook.yaml'), 'old content');
+      await writeFile(join(projectDir, 'yamchart.yaml'), 'old content');
 
       await initProject(projectDir, { force: true });
 
-      const content = await readFile(join(projectDir, 'dashbook.yaml'), 'utf-8');
+      const content = await readFile(join(projectDir, 'yamchart.yaml'), 'utf-8');
       expect(content).toContain('name: existing-project');
       expect(content).not.toContain('old content');
     });

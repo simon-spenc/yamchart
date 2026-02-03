@@ -4,7 +4,7 @@ import { join } from 'path';
 import { stringify as stringifyYaml } from 'yaml';
 import type { ConfigLoader } from '../services/config-loader.js';
 import type { GitService } from '../services/git-service.js';
-import type { DashboardLayout } from '@dashbook/schema';
+import type { DashboardLayout } from '@yamchart/schema';
 
 export interface DashboardRoutesOptions {
   configLoader: ConfigLoader;

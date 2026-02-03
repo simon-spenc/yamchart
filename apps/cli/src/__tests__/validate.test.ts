@@ -8,7 +8,7 @@ describe('validateProject', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = join(tmpdir(), `dashbook-validate-test-${Date.now()}`);
+    testDir = join(tmpdir(), `yamchart-validate-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
     await mkdir(join(testDir, 'connections'), { recursive: true });
     await mkdir(join(testDir, 'models'), { recursive: true });
@@ -21,7 +21,7 @@ describe('validateProject', () => {
 
   it('passes with valid minimal config', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test-project'
     );
 
@@ -31,16 +31,16 @@ describe('validateProject', () => {
     expect(result.errors).toHaveLength(0);
   });
 
-  it('fails when dashbook.yaml is missing', async () => {
+  it('fails when yamchart.yaml is missing', async () => {
     const result = await validateProject(testDir, { dryRun: false });
 
     expect(result.success).toBe(false);
-    expect(result.errors[0].message).toContain('dashbook.yaml');
+    expect(result.errors[0].message).toContain('yamchart.yaml');
   });
 
   it('fails with invalid YAML syntax', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'invalid: yaml: content:'
     );
 
@@ -51,7 +51,7 @@ describe('validateProject', () => {
 
   it('fails when chart references non-existent model', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test'
     );
     await writeFile(
@@ -80,7 +80,7 @@ chart:
 
   it('passes when chart references existing model', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test'
     );
     await writeFile(

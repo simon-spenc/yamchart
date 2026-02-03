@@ -1,5 +1,5 @@
 {
-  "name": "@dashbook/query",
+  "name": "@yamchart/query",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -17,14 +17,14 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@dashbook/schema": "workspace:*",
+    "@yamchart/schema": "workspace:*",
     "nunjucks": "^3.2.4",
     "date-fns": "^4.1.0",
     "duckdb": "^1.1.0",
     "pg": "^8.13.0"
   },
   "devDependencies": {
-    "@dashbook/config": "workspace:*",
+    "@yamchart/config": "workspace:*",
     "@types/node": "^22.0.0",
     "@types/nunjucks": "^3.2.6",
     "@types/pg": "^8.11.0",

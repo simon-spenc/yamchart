@@ -1,5 +1,5 @@
 {
-  "name": "@dashbook/web",
+  "name": "@yamchart/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@dashbook/auth": "workspace:*",
+    "@yamchart/auth": "workspace:*",
     "@tanstack/react-query": "^5.62.0",
     "clsx": "^2.1.0",
     "date-fns": "^4.1.0",
@@ -27,7 +27,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@dashbook/config": "workspace:*",
+    "@yamchart/config": "workspace:*",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.3.0",

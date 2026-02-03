@@ -10,7 +10,7 @@ describe('ConfigLoader', () => {
 
   beforeEach(async () => {
     // Create temp directory for test files
-    testDir = join(tmpdir(), `dashbook-test-${Date.now()}`);
+    testDir = join(tmpdir(), `yamchart-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
     await mkdir(join(testDir, 'connections'), { recursive: true });
     await mkdir(join(testDir, 'models'), { recursive: true });
@@ -26,7 +26,7 @@ describe('ConfigLoader', () => {
 
   it('loads project config', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       `
 version: "1.0"
 name: test-project
@@ -44,7 +44,7 @@ defaults:
 
   it('loads connections', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test'
     );
     await writeFile(
@@ -68,7 +68,7 @@ config:
 
   it('loads charts', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test'
     );
     await writeFile(
@@ -99,7 +99,7 @@ chart:
 
   it('loads models from SQL files', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test'
     );
     await writeFile(
@@ -126,7 +126,7 @@ GROUP BY 1
 
   it('gets chart by name', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test'
     );
     await writeFile(
@@ -160,7 +160,7 @@ chart:
 
   it('gets connection by name', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'version: "1.0"\nname: test'
     );
     await writeFile(
@@ -183,7 +183,7 @@ config:
 
   it('throws on invalid project config', async () => {
     await writeFile(
-      join(testDir, 'dashbook.yaml'),
+      join(testDir, 'yamchart.yaml'),
       'invalid: yaml: content:'
     );
 
@@ -191,15 +191,15 @@ config:
     await expect(loader.load()).rejects.toThrow();
   });
 
-  it('throws if dashbook.yaml is missing', async () => {
+  it('throws if yamchart.yaml is missing', async () => {
     loader = new ConfigLoader(testDir);
-    await expect(loader.load()).rejects.toThrow('dashbook.yaml not found');
+    await expect(loader.load()).rejects.toThrow('yamchart.yaml not found');
   });
 
   describe('dashboard loading', () => {
     it('loads dashboards from dashboards directory', async () => {
       await writeFile(
-        join(testDir, 'dashbook.yaml'),
+        join(testDir, 'yamchart.yaml'),
         'version: "1.0"\nname: test'
       );
       await mkdir(join(testDir, 'dashboards'), { recursive: true });
@@ -228,7 +228,7 @@ layout:
 
     it('getDashboardByName returns specific dashboard', async () => {
       await writeFile(
-        join(testDir, 'dashbook.yaml'),
+        join(testDir, 'yamchart.yaml'),
         'version: "1.0"\nname: test'
       );
       await mkdir(join(testDir, 'dashboards'), { recursive: true });
@@ -257,7 +257,7 @@ layout:
 
     it('returns undefined for non-existent dashboard', async () => {
       await writeFile(
-        join(testDir, 'dashbook.yaml'),
+        join(testDir, 'yamchart.yaml'),
         'version: "1.0"\nname: test'
       );
 

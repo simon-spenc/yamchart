@@ -1,5 +1,5 @@
 {
-  "extends": "@dashbook/config/tsconfig.node.json",
+  "extends": "@yamchart/config/tsconfig.node.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

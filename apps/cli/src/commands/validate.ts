@@ -6,8 +6,8 @@ import {
   ConnectionSchema,
   ChartSchema,
   DashboardSchema,
-} from '@dashbook/schema';
-import { parseModelMetadata } from '@dashbook/query';
+} from '@yamchart/schema';
+import { parseModelMetadata } from '@yamchart/query';
 
 export interface ValidationError {
   file: string;
@@ -63,8 +63,8 @@ export async function validateProject(
 
   // Phase 1: Schema validation
 
-  // Validate dashbook.yaml
-  const projectPath = join(projectDir, 'dashbook.yaml');
+  // Validate yamchart.yaml
+  const projectPath = join(projectDir, 'yamchart.yaml');
   try {
     await access(projectPath);
     filesChecked++;
@@ -77,14 +77,14 @@ export async function validateProject(
       filesPassed++;
     } else {
       errors.push({
-        file: 'dashbook.yaml',
+        file: 'yamchart.yaml',
         message: `Invalid schema: ${result.error.errors[0]?.message || 'Unknown error'}`,
       });
     }
   } catch {
     errors.push({
-      file: 'dashbook.yaml',
-      message: 'dashbook.yaml not found',
+      file: 'yamchart.yaml',
+      message: 'yamchart.yaml not found',
     });
     return {
       success: false,
@@ -271,7 +271,7 @@ function crossReferenceValidation(
     if (!config.connections.has(connName)) {
       const suggestion = findSimilar(connName, Array.from(config.connections.keys()));
       errors.push({
-        file: 'dashbook.yaml',
+        file: 'yamchart.yaml',
         message: `Default connection "${connName}" not found`,
         suggestion: suggestion ? `Did you mean "${suggestion}"?` : undefined,
       });
@@ -323,7 +323,7 @@ async function dryRunValidation(
   connectionName: string | undefined,
   errors: ValidationError[]
 ): Promise<{ passed: number; failed: number }> {
-  const { DuckDBConnector } = await import('@dashbook/query');
+  const { DuckDBConnector } = await import('@yamchart/query');
 
   let passed = 0;
   let failed = 0;
@@ -332,7 +332,7 @@ async function dryRunValidation(
   const connName = connectionName || config.project?.defaults?.connection;
   if (!connName) {
     errors.push({
-      file: 'dashbook.yaml',
+      file: 'yamchart.yaml',
       message: 'No connection specified for dry-run (use --connection or set defaults.connection)',
     });
     return { passed, failed: 1 };
@@ -341,7 +341,7 @@ async function dryRunValidation(
   const connection = config.connections.get(connName);
   if (!connection) {
     errors.push({
-      file: 'dashbook.yaml',
+      file: 'yamchart.yaml',
       message: `Connection "${connName}" not found`,
     });
     return { passed, failed: 1 };

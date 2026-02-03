@@ -8,14 +8,14 @@ import * as output from './utils/output.js';
 const program = new Command();
 
 program
-  .name('dashbook')
+  .name('yamchart')
   .description('Git-native business intelligence dashboards')
   .version('0.1.0');
 
 program
   .command('validate')
   .description('Validate configuration files')
-  .argument('[path]', 'Path to dashbook project', '.')
+  .argument('[path]', 'Path to yamchart project', '.')
   .option('--dry-run', 'Connect to database and test queries with EXPLAIN')
   .option('-c, --connection <name>', 'Connection to use for dry-run')
   .option('--json', 'Output as JSON')
@@ -25,10 +25,10 @@ program
 
     if (!projectDir) {
       if (options.json) {
-        console.log(JSON.stringify({ success: false, error: 'dashbook.yaml not found' }));
+        console.log(JSON.stringify({ success: false, error: 'yamchart.yaml not found' }));
       } else {
-        output.error('dashbook.yaml not found');
-        output.detail('Run this command from a dashbook project directory');
+        output.error('yamchart.yaml not found');
+        output.detail('Run this command from a yamchart project directory');
       }
       process.exit(2);
     }
@@ -37,7 +37,7 @@ program
     loadEnvFile(projectDir);
 
     if (!options.json) {
-      output.header('Validating dashbook project...');
+      output.header('Validating yamchart project...');
     }
 
     const result = await validateProject(projectDir, {
@@ -94,7 +94,7 @@ program
 program
   .command('dev')
   .description('Start development server with hot reload')
-  .argument('[path]', 'Path to dashbook project', '.')
+  .argument('[path]', 'Path to yamchart project', '.')
   .option('-p, --port <number>', 'Port to listen on', '3001')
   .option('--api-only', 'Only serve API, no web UI')
   .option('--no-open', 'Do not open browser automatically')
@@ -103,8 +103,8 @@ program
     const projectDir = await findProjectRoot(startPath);
 
     if (!projectDir) {
-      output.error('dashbook.yaml not found');
-      output.detail('Run this command from a dashbook project directory');
+      output.error('yamchart.yaml not found');
+      output.detail('Run this command from a yamchart project directory');
       process.exit(2);
     }
 
@@ -119,10 +119,10 @@ program
 
 program
   .command('init')
-  .description('Create a new dashbook project')
+  .description('Create a new yamchart project')
   .argument('[directory]', 'Target directory', '.')
   .option('--example', 'Create full example project with sample database')
-  .option('--empty', 'Create only dashbook.yaml (no connections, models, or charts)')
+  .option('--empty', 'Create only yamchart.yaml (no connections, models, or charts)')
   .option('--force', 'Overwrite existing files')
   .action(async (directory: string, options: { example?: boolean; empty?: boolean; force?: boolean }) => {
     const { initProject } = await import('./commands/init.js');
@@ -144,7 +144,7 @@ program
       output.detail(`... and ${result.files.length - 10} more files`);
     }
     output.newline();
-    output.info(`Run \`cd ${directory === '.' ? basename(targetDir) : directory} && dashbook dev\` to start.`);
+    output.info(`Run \`cd ${directory === '.' ? basename(targetDir) : directory} && yamchart dev\` to start.`);
   });
 
 program.parse();

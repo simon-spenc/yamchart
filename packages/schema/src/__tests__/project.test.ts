@@ -45,7 +45,7 @@ describe('ProjectSchema', () => {
         },
         production: {
           connection: 'snowflake-prod',
-          base_url: 'https://dashbook.example.com',
+          base_url: 'https://yamchart.example.com',
         },
       },
     };

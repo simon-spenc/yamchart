@@ -45,7 +45,7 @@ async function getTemplatesDir(): Promise<string> {
     return srcTemplates;
   }
 
-  throw new Error('Templates not found. Reinstall dashbook or check installation.');
+  throw new Error('Templates not found. Reinstall yamchart or check installation.');
 }
 
 /**
@@ -53,34 +53,34 @@ async function getTemplatesDir(): Promise<string> {
  * Handles both development and production contexts.
  */
 async function getExamplesDir(): Promise<string> {
-  // In production (dist/): dist -> cli -> apps -> dashbook -> examples
+  // In production (dist/): dist -> cli -> apps -> yamchart -> examples
   const distExamples = join(__dirname, '../../../examples');
   if (await directoryExists(distExamples)) {
     return distExamples;
   }
 
-  // In development (src/commands): src/commands -> src -> cli -> apps -> dashbook -> examples
+  // In development (src/commands): src/commands -> src -> cli -> apps -> yamchart -> examples
   const srcExamples = join(__dirname, '../../../../examples');
   if (await directoryExists(srcExamples)) {
     return srcExamples;
   }
 
-  throw new Error('Example assets not found. Reinstall dashbook or use default mode.');
+  throw new Error('Example assets not found. Reinstall yamchart or use default mode.');
 }
 
 export async function initProject(projectDir: string, options: InitOptions): Promise<InitResult> {
   const projectName = basename(projectDir);
   const files: string[] = [];
 
-  // Check if dashbook.yaml already exists
-  const dashbookYamlPath = join(projectDir, 'dashbook.yaml');
+  // Check if yamchart.yaml already exists
+  const yamchartYamlPath = join(projectDir, 'yamchart.yaml');
   try {
-    await access(dashbookYamlPath);
+    await access(yamchartYamlPath);
     if (!options.force) {
       return {
         success: false,
         files: [],
-        error: `${dashbookYamlPath} already exists. Use --force to overwrite.`,
+        error: `${yamchartYamlPath} already exists. Use --force to overwrite.`,
       };
     }
   } catch {
@@ -96,7 +96,7 @@ export async function initProject(projectDir: string, options: InitOptions): Pro
       const examplesDir = await getExamplesDir();
       await copyDirectory(examplesDir, projectDir, files, projectName);
     } else if (options.empty) {
-      // Empty mode - only dashbook.yaml
+      // Empty mode - only yamchart.yaml
       const templateDir = join(await getTemplatesDir(), 'empty');
       await copyTemplate(templateDir, projectDir, files, projectName);
     } else {
@@ -175,9 +175,9 @@ async function copyDirectory(
       if (entry.name.endsWith('.duckdb')) {
         await copyFile(srcPath, destPath);
       } else {
-        // For text files, replace project name in dashbook.yaml
+        // For text files, replace project name in yamchart.yaml
         let content = await readFile(srcPath, 'utf-8');
-        if (entry.name === 'dashbook.yaml') {
+        if (entry.name === 'yamchart.yaml') {
           content = content.replace(/^name:\s*\S+/m, `name: ${projectName}`);
         }
         await writeFile(destPath, content, 'utf-8');
