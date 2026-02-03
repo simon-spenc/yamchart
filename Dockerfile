@@ -16,6 +16,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/cli/package.json ./apps/cli/
 COPY apps/server/package.json ./apps/server/
 COPY apps/web/package.json ./apps/web/
 # Copy entire config package (contains static tsconfig files needed at install time)
