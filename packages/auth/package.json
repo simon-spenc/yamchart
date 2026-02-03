@@ -1,6 +1,6 @@
 {
   "name": "@yamchart/auth",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Yamchart authentication module",
   "type": "module",
   "license": "MIT",
@@ -14,7 +14,11 @@
   "bugs": {
     "url": "https://github.com/simon-spenc/yamchart/issues"
   },
-  "keywords": ["yamchart", "auth", "supabase"],
+  "keywords": [
+    "yamchart",
+    "auth",
+    "supabase"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

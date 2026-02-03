@@ -1,6 +1,6 @@
 {
   "name": "@yamchart/query",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Yamchart SQL templating and query compilation",
   "type": "module",
   "license": "MIT",
@@ -14,7 +14,13 @@
   "bugs": {
     "url": "https://github.com/simon-spenc/yamchart/issues"
   },
-  "keywords": ["yamchart", "sql", "nunjucks", "templating", "query"],
+  "keywords": [
+    "yamchart",
+    "sql",
+    "nunjucks",
+    "templating",
+    "query"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

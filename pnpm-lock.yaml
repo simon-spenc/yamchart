@@ -97,6 +97,9 @@ importers:
       '@yamchart/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@yamchart/web':
+        specifier: workspace:*
+        version: link:../web
       tsx:
         specifier: ^4.7.0
         version: 4.21.0

@@ -1,6 +1,6 @@
 {
   "name": "@yamchart/server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Yamchart server - Fastify API for Git-native BI dashboards",
   "type": "module",
   "license": "MIT",
@@ -14,7 +14,13 @@
   "bugs": {
     "url": "https://github.com/simon-spenc/yamchart/issues"
   },
-  "keywords": ["yamchart", "bi", "dashboards", "fastify", "server"],
+  "keywords": [
+    "yamchart",
+    "bi",
+    "dashboards",
+    "fastify",
+    "server"
+  ],
   "main": "./dist/exports.js",
   "exports": {
     ".": {
@@ -23,7 +29,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r ../web/dist dist/public",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "start:prod": "NODE_ENV=production node dist/index.js",
@@ -45,13 +51,15 @@
   },
   "devDependencies": {
     "@yamchart/config": "workspace:*",
+    "@yamchart/web": "workspace:*",
     "@types/node": "^22.0.0",
     "tsx": "^4.7.0",
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "dist/public"
   ],
   "publishConfig": {
     "access": "public"

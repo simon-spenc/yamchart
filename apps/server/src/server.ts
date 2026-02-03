@@ -44,7 +44,7 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
     host = '0.0.0.0',
     watch = false,
     serveStatic = process.env.NODE_ENV === 'production',
-    staticDir = join(__dirname, '../../web/dist'),
+    staticDir = join(__dirname, 'public'),
     auth,
   } = options;
 

@@ -1,6 +1,6 @@
 {
   "name": "@yamchart/schema",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Yamchart Zod schemas and TypeScript types",
   "type": "module",
   "license": "MIT",
@@ -14,7 +14,13 @@
   "bugs": {
     "url": "https://github.com/simon-spenc/yamchart/issues"
   },
-  "keywords": ["yamchart", "schemas", "zod", "typescript", "validation"],
+  "keywords": [
+    "yamchart",
+    "schemas",
+    "zod",
+    "typescript",
+    "validation"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
