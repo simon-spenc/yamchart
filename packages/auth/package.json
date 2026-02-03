@@ -1,8 +1,20 @@
 {
   "name": "@yamchart/auth",
   "version": "0.1.0",
-  "private": true,
+  "description": "Yamchart authentication module",
   "type": "module",
+  "license": "MIT",
+  "author": "Simon Spencer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simon-spenc/yamchart.git",
+    "directory": "packages/auth"
+  },
+  "homepage": "https://github.com/simon-spenc/yamchart#readme",
+  "bugs": {
+    "url": "https://github.com/simon-spenc/yamchart/issues"
+  },
+  "keywords": ["yamchart", "auth", "supabase"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -28,5 +40,11 @@
   "devDependencies": {
     "@yamchart/config": "workspace:*",
     "typescript": "^5.7.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
