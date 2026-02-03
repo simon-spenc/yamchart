@@ -3,6 +3,18 @@
   "version": "0.1.0",
   "description": "Git-native business intelligence dashboards",
   "type": "module",
+  "license": "MIT",
+  "author": "Simon Spencer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simon-spenc/yamchart.git",
+    "directory": "apps/cli"
+  },
+  "homepage": "https://github.com/simon-spenc/yamchart#readme",
+  "bugs": {
+    "url": "https://github.com/simon-spenc/yamchart/issues"
+  },
+  "keywords": ["bi", "business-intelligence", "dashboards", "yaml", "sql", "charts", "analytics"],
   "bin": {
     "yamchart": "./bin/yamchart"
   },
@@ -39,5 +51,8 @@
   "files": [
     "dist",
     "bin"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
