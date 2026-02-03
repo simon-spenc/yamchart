@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { resolve } from 'path';
+import { resolve, basename } from 'path';
 import { validateProject } from './commands/validate.js';
 import { findProjectRoot, loadEnvFile } from './utils/config.js';
 import * as output from './utils/output.js';
@@ -115,6 +115,36 @@ program
       apiOnly: options.apiOnly ?? false,
       open: options.open,
     });
+  });
+
+program
+  .command('init')
+  .description('Create a new dashbook project')
+  .argument('[directory]', 'Target directory', '.')
+  .option('--example', 'Create full example project with sample database')
+  .option('--empty', 'Create only dashbook.yaml (no connections, models, or charts)')
+  .option('--force', 'Overwrite existing files')
+  .action(async (directory: string, options: { example?: boolean; empty?: boolean; force?: boolean }) => {
+    const { initProject } = await import('./commands/init.js');
+    const targetDir = resolve(directory);
+
+    const result = await initProject(targetDir, options);
+
+    if (!result.success) {
+      output.error(result.error || 'Failed to create project');
+      process.exit(1);
+    }
+
+    output.newline();
+    output.success(`Created ${directory === '.' ? basename(targetDir) : directory}/`);
+    for (const file of result.files.slice(0, 10)) {
+      output.detail(file);
+    }
+    if (result.files.length > 10) {
+      output.detail(`... and ${result.files.length - 10} more files`);
+    }
+    output.newline();
+    output.info(`Run \`cd ${directory === '.' ? basename(targetDir) : directory} && dashbook dev\` to start.`);
   });
 
 program.parse();

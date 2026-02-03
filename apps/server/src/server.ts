@@ -81,7 +81,11 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
   let connector: Connector;
   if (defaultConnection.type === 'duckdb') {
     const duckdbConfig = defaultConnection as DuckDBConnection;
-    connector = new DuckDBConnector({ path: duckdbConfig.config.path });
+    // Resolve path relative to project directory
+    const dbPath = duckdbConfig.config.path.startsWith('/')
+      ? duckdbConfig.config.path
+      : join(projectDir, duckdbConfig.config.path);
+    connector = new DuckDBConnector({ path: dbPath });
     await connector.connect();
   } else if (defaultConnection.type === 'postgres') {
     const pgConnection = defaultConnection as PostgresConnection;

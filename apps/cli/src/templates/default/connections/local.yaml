@@ -1,0 +1,4 @@
+name: local
+type: duckdb
+config:
+  path: ":memory:"

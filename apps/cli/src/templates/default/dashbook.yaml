@@ -1,0 +1,6 @@
+name: {{name}}
+version: "1.0"
+default_connection: local
+
+defaults:
+  cache_ttl: 5m
