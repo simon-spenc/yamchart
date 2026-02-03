@@ -135,6 +135,36 @@ pnpm test
 pnpm build
 ```
 
+## Releasing
+
+Releases are automated via GitHub Actions. To create a release:
+
+1. Update version in all package.json files:
+   ```bash
+   # Update root and all packages to same version
+   pnpm -r exec -- npm version 0.2.0 --no-git-tag-version
+   ```
+
+2. Commit and tag:
+   ```bash
+   git add -A
+   git commit -m "chore: release v0.2.0"
+   git tag v0.2.0
+   git push && git push --tags
+   ```
+
+3. GitHub Actions will automatically:
+   - Run tests
+   - Publish npm packages
+   - Build and push Docker image to ghcr.io
+   - Create GitHub release with changelog
+
+### Required Secrets
+
+Add `NPM_TOKEN` to your repository secrets (Settings → Secrets → Actions):
+- Create token at npmjs.com → Access Tokens → Generate New Token (Automation)
+- Token needs publish access to @yamchart organization
+
 ## Documentation
 
 - [Technical Specification](./Yamchart%20Technical%20Spec.md)
