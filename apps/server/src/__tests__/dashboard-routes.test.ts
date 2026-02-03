@@ -16,9 +16,9 @@ describe('Dashboard Routes', () => {
     testDir = join(tmpdir(), `yamchart-dashboard-test-${Date.now()}`);
     await mkdir(testDir, { recursive: true });
 
-    // Init git repo
+    // Init git repo with 'main' as default branch
     const git = simpleGit(testDir);
-    await git.init();
+    await git.init(['--initial-branch=main']);
     await git.addConfig('user.email', 'test@test.com');
     await git.addConfig('user.name', 'Test User');
 
