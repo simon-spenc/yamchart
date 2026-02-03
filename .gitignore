@@ -37,7 +37,7 @@ coverage/
 .dashbook/
 
 # Sample data (generated)
-examples/sample-data.duckdb
+*.duckdb
 
 # Git worktrees
 .worktrees/
