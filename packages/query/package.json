@@ -1,8 +1,20 @@
 {
   "name": "@yamchart/query",
   "version": "0.1.0",
-  "private": true,
+  "description": "Yamchart SQL templating and query compilation",
   "type": "module",
+  "license": "MIT",
+  "author": "Simon Spencer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simon-spenc/yamchart.git",
+    "directory": "packages/query"
+  },
+  "homepage": "https://github.com/simon-spenc/yamchart#readme",
+  "bugs": {
+    "url": "https://github.com/simon-spenc/yamchart/issues"
+  },
+  "keywords": ["yamchart", "sql", "nunjucks", "templating", "query"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,5 +42,11 @@
     "@types/pg": "^8.11.0",
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   }
 }
