@@ -24,7 +24,7 @@ layout:
       widgets:
         - type: chart
           ref: revenue-trend
-          cols: 8
+          cols: 6
         - type: text
           content: |
             ## Revenue Notes
@@ -35,4 +35,4 @@ layout:
             - Excludes taxes
             - Includes shipping fees
             - Updated daily at midnight UTC
-          cols: 4
+          cols: 6
