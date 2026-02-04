@@ -12,5 +12,5 @@ chart:
   comparison:
     enabled: true
     field: previous_value
-    label: vs last month
+    label: vs previous period
     type: percent_change

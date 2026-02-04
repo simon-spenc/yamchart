@@ -3,22 +3,25 @@
 -- @owner: analytics-team
 -- @tags: [kpi, customers]
 --
+-- @param start_date: date = current_date() - interval '30 days'
+-- @param end_date: date = current_date()
+--
 -- @returns:
 --   - value: number -- Current period unique customers
 --   - previous_value: number -- Previous period unique customers
 
-WITH current_period AS (
-    SELECT COUNT(DISTINCT customer_id) as value
-    FROM orders
-    WHERE order_date >= date_trunc('month', current_date())
+WITH period_days AS (
+    SELECT ('{{ end_date }}'::DATE - '{{ start_date }}'::DATE + 1)::INTEGER as days
+),
+current_period AS (
+    SELECT COALESCE(COUNT(DISTINCT customer_id), 0) as value
+    FROM {{ ref('orders') }}
+    WHERE order_date BETWEEN '{{ start_date }}' AND '{{ end_date }}'
 ),
 previous_period AS (
-    SELECT COUNT(DISTINCT customer_id) as previous_value
-    FROM orders
-    WHERE order_date >= date_trunc('month', current_date() - interval '1 month')
-      AND order_date < date_trunc('month', current_date())
+    SELECT COALESCE(COUNT(DISTINCT customer_id), 0) as previous_value
+    FROM {{ ref('orders') }}, period_days
+    WHERE order_date BETWEEN '{{ start_date }}'::DATE - period_days.days AND '{{ start_date }}'::DATE - 1
 )
-SELECT
-    COALESCE(c.value, 0) as value,
-    COALESCE(p.previous_value, 0) as previous_value
+SELECT c.value, p.previous_value
 FROM current_period c, previous_period p

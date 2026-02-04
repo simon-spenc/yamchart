@@ -1,10 +1,11 @@
 name: local-postgres
-description: Local PostgreSQL for development
+description: Local PostgreSQL for development (via docker-compose)
 type: postgres
 
 config:
   host: localhost
   port: 5432
-  database: dashbook_dev
+  database: yamchart_test
 
 # No auth block = uses PGUSER/PGPASSWORD env vars (or defaults to postgres)
+# For docker-compose, use: PGUSER=postgres PGPASSWORD=postgres

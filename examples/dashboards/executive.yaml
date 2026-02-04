@@ -24,7 +24,9 @@ layout:
       widgets:
         - type: chart
           ref: revenue-trend
-          cols: 6
+          cols: 12
+    - height: 100
+      widgets:
         - type: text
           content: |+
             ## Revenue Notes
@@ -39,4 +41,4 @@ layout:
             1. hello
             2. {{orders-kpi}}
 
-          cols: 6
+          cols: 12
