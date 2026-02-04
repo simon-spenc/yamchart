@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useRef, useEffect } from 'react';
 import GridLayout, { type LayoutItem } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -11,59 +11,97 @@ interface DashboardGridProps {
   onLayoutChange?: (layout: DashboardLayout) => void;
 }
 
-export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
-  const { isEditing, setPendingLayout } = useEditMode();
+// Generate a stable ID for a widget based on its content (NOT position)
+function getWidgetId(widget: DashboardWidget): string {
+  if (widget.type === 'chart' && widget.ref) {
+    return `chart-${widget.ref}`;
+  }
+  if (widget.type === 'text') {
+    // Use content-based ID only - no index since that changes with position
+    const contentSlug = (widget.content || 'empty')
+      .slice(0, 50)
+      .replace(/[^a-zA-Z0-9]/g, '_')
+      .replace(/_+/g, '_');
+    return `text-${contentSlug}`;
+  }
+  return `widget-unknown`;
+}
 
-  // Convert dashboard layout to react-grid-layout format
-  const { gridLayout, widgets } = useMemo(() => {
+export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
+  const { isEditing, setPendingLayout, setOriginalLayout, currentLayout, removeWidget } = useEditMode();
+  const lastLayoutRef = useRef<string>('');
+
+  // Set the original layout when layout prop changes (compare by JSON to avoid infinite loops)
+  useEffect(() => {
+    const layoutJson = JSON.stringify(layout);
+    if (layoutJson !== lastLayoutRef.current) {
+      lastLayoutRef.current = layoutJson;
+      setOriginalLayout(layout);
+    }
+  }, [layout, setOriginalLayout]);
+
+  // Use currentLayout from context (which includes any pending changes) or fall back to prop
+  const effectiveLayout = currentLayout || layout;
+
+  // Convert dashboard layout to react-grid-layout format using stable IDs
+  const { gridLayout, widgetMap, widgetList } = useMemo(() => {
     const items: LayoutItem[] = [];
-    const widgetMap: Map<string, { widget: DashboardWidget; rowIndex: number }> = new Map();
+    const idToWidget: Map<string, { widget: DashboardWidget; rowIndex: number; widgetIndex: number }> = new Map();
+    const allWidgets: Array<{ id: string; widget: DashboardWidget; rowIndex: number; widgetIndex: number }> = [];
 
     let yOffset = 0;
-    layout.rows.forEach((row, rowIndex) => {
+
+    effectiveLayout.rows.forEach((row, rowIndex) => {
       let xOffset = 0;
       row.widgets.forEach((widget, widgetIndex) => {
-        const key = `${rowIndex}-${widgetIndex}`;
-        items.push({
-          i: key,
+        const id = getWidgetId(widget);
+        const item: LayoutItem = {
+          i: id,
           x: xOffset,
           y: yOffset,
           w: widget.cols,
           h: Math.ceil(row.height / 50),
           minW: widget.type === 'chart' ? 3 : 2,
           minH: 2,
-          // Mark as static when not editing to prevent any interaction
           static: !isEditing,
-        });
-        widgetMap.set(key, { widget, rowIndex });
+        };
+        items.push(item);
+        idToWidget.set(id, { widget, rowIndex, widgetIndex });
+        allWidgets.push({ id, widget, rowIndex, widgetIndex });
         xOffset += widget.cols;
       });
       yOffset += Math.ceil(row.height / 50);
     });
 
-    return { gridLayout: items, widgets: widgetMap };
-  }, [layout, isEditing]);
+    return { gridLayout: items, widgetMap: idToWidget, widgetList: allWidgets };
+  }, [effectiveLayout, isEditing]);
 
   const handleLayoutChange = useCallback(
     (newGridLayout: LayoutItem[]) => {
-      if (!isEditing) return;
+      if (!isEditing) {
+        return;
+      }
 
-      // Convert grid layout back to dashboard layout format
+      // Filter to only items we know about and sort by position
+      const knownItems = newGridLayout.filter(item => widgetMap.has(item.i));
+      const sorted = [...knownItems].sort((a, b) => a.y - b.y || a.x - b.x);
+
       // Group by y position to form rows
-      const sorted = [...newGridLayout].sort((a, b) => a.y - b.y || a.x - b.x);
-
       const rows: { height: number; widgets: DashboardWidget[] }[] = [];
       let currentY = -1;
       let currentRow: DashboardWidget[] = [];
       let currentH = 0;
 
       sorted.forEach((item) => {
-        const widgetData = widgets.get(item.i);
-        if (!widgetData) return;
+        const widgetData = widgetMap.get(item.i);
+        if (!widgetData) {
+          return;
+        }
 
-        if (item.y !== currentY) {
+        // Check if we need to start a new row (different y position)
+        if (currentY === -1 || item.y >= currentY + currentH) {
           if (currentRow.length > 0) {
-            rows.push({ height: currentH * 50, widgets: currentRow });
+            rows.push({ height: currentH * 50, widgets: [...currentRow] });
           }
           currentRow = [];
           currentY = item.y;
@@ -78,19 +116,23 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
       });
 
       if (currentRow.length > 0) {
-        rows.push({ height: currentH * 50, widgets: currentRow });
+        rows.push({ height: currentH * 50, widgets: [...currentRow] });
       }
 
       const newLayout: DashboardLayout = {
-        gap: layout.gap,
+        gap: effectiveLayout.gap,
         rows,
       };
 
       setPendingLayout(newLayout);
       onLayoutChange?.(newLayout);
     },
-    [isEditing, widgets, layout.gap, setPendingLayout, onLayoutChange]
+    [isEditing, widgetMap, effectiveLayout.gap, setPendingLayout, onLayoutChange]
   );
+
+  const handleRemoveWidget = useCallback((rowIndex: number, widgetIndex: number) => {
+    removeWidget(rowIndex, widgetIndex);
+  }, [removeWidget]);
 
   return (
     <>
@@ -107,11 +149,14 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
         isResizable={isEditing}
         onLayoutChange={(newLayout: unknown) => handleLayoutChange(newLayout as LayoutItem[])}
         draggableHandle=".cursor-grab"
-        margin={[layout.gap ?? 16, layout.gap ?? 16] as [number, number]}
+        margin={[effectiveLayout.gap ?? 16, effectiveLayout.gap ?? 16] as [number, number]}
+        compactType={null}
+        preventCollision={true}
+        autoSize={true}
       >
-        {Array.from(widgets.entries()).map(([key, { widget }]) => (
-          <div key={key} className="h-full">
-            <WidgetWrapper>
+        {widgetList.map(({ id, widget, rowIndex, widgetIndex }) => (
+          <div key={id} className="h-full">
+            <WidgetWrapper onRemove={() => handleRemoveWidget(rowIndex, widgetIndex)}>
               {widget.type === 'chart' && widget.ref && (
                 <ChartWidget chartRef={widget.ref} />
               )}
