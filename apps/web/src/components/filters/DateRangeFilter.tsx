@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useFilterStore } from '../../stores/filterStore';
 import { DatePicker } from './DatePicker';
@@ -64,6 +64,21 @@ export function DateRangeFilter({
       (globalFilters[name] as DateRangeValue) ??
       defaultValue
     : (globalFilters[name] as DateRangeValue) ?? defaultValue;
+
+  // Set default value in store on mount if not already set
+  useEffect(() => {
+    const existingValue = chartName
+      ? chartFilters[chartName]?.[name] ?? globalFilters[name]
+      : globalFilters[name];
+
+    if (existingValue === undefined && defaultValue) {
+      if (chartName) {
+        setChartFilter(chartName, name, defaultValue);
+      } else {
+        setGlobalFilter(name, defaultValue);
+      }
+    }
+  }, [chartName, name, defaultValue, globalFilters, chartFilters, setGlobalFilter, setChartFilter]);
 
   const handleChange = (value: DateRangeValue) => {
     if (chartName) {

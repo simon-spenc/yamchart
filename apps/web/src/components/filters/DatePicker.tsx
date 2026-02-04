@@ -3,6 +3,47 @@ import { DayPicker, type DateRange } from 'react-day-picker';
 import { format, parse } from 'date-fns';
 import 'react-day-picker/style.css';
 
+// Custom styles for better visibility of selected dates
+const datePickerStyles = `
+  .rdp-root {
+    --rdp-accent-color: #2563eb;
+    --rdp-accent-background-color: #dbeafe;
+    --rdp-range_start-color: white;
+    --rdp-range_start-background: #2563eb;
+    --rdp-range_end-color: white;
+    --rdp-range_end-background: #2563eb;
+    --rdp-range_middle-background: #dbeafe;
+    --rdp-range_middle-color: #1e40af;
+  }
+  .rdp-day {
+    border-radius: 6px;
+  }
+  .rdp-selected .rdp-day_button {
+    font-weight: 600;
+  }
+  .rdp-range_start .rdp-day_button,
+  .rdp-range_end .rdp-day_button {
+    background-color: #2563eb !important;
+    color: white !important;
+    font-weight: 600;
+  }
+  .rdp-range_middle .rdp-day_button {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+  }
+  .rdp-today .rdp-day_button {
+    font-weight: 700;
+    border: 2px solid #2563eb;
+  }
+  .rdp-day_button:hover {
+    background-color: #e5e7eb !important;
+  }
+  .rdp-range_start .rdp-day_button:hover,
+  .rdp-range_end .rdp-day_button:hover {
+    background-color: #1d4ed8 !important;
+  }
+`;
+
 interface DatePickerProps {
   startDate?: string;
   endDate?: string;
@@ -44,19 +85,13 @@ export function DatePicker({ startDate, endDate, onApply, onCancel }: DatePicker
       ref={popoverRef}
       className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50"
     >
+      <style>{datePickerStyles}</style>
       <DayPicker
         mode="range"
         selected={range}
         onSelect={setRange}
         numberOfMonths={2}
         defaultMonth={range?.from || new Date()}
-        classNames={{
-          root: 'text-sm',
-          day: 'w-8 h-8 rounded hover:bg-gray-100',
-          selected: 'bg-blue-500 text-white hover:bg-blue-600',
-          range_middle: 'bg-blue-100',
-          today: 'font-bold',
-        }}
       />
       <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200">
         <button
@@ -68,7 +103,7 @@ export function DatePicker({ startDate, endDate, onApply, onCancel }: DatePicker
         <button
           onClick={handleApply}
           disabled={!range?.from || !range?.to}
-          className="px-3 py-1.5 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Apply
         </button>

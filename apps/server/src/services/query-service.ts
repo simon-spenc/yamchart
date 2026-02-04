@@ -90,6 +90,19 @@ export class QueryService {
     this.cache.clear();
   }
 
+  /**
+   * Update the compiler with new models and refs.
+   * Called when config is reloaded.
+   */
+  updateCompiler(config: { models: Record<string, { metadata: ModelMetadata; sql: string }>; refs: Record<string, string> }): void {
+    this.compiler = new QueryCompiler({
+      models: config.models,
+      refs: config.refs,
+    });
+    this.models = new Map(Object.entries(config.models));
+    this.refs = config.refs;
+  }
+
   getCacheStats() {
     return this.cache.getStats();
   }

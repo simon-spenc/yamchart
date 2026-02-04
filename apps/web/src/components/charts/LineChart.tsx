@@ -87,7 +87,7 @@ export const LineChart = forwardRef<EChartHandle, LineChartProps>(function LineC
       },
     },
     grid: {
-      left: '3%',
+      left: '12%',
       right: '4%',
       bottom: '3%',
       top: '10%',
@@ -111,7 +111,7 @@ export const LineChart = forwardRef<EChartHandle, LineChartProps>(function LineC
       type: 'value',
       name: yAxis.label,
       nameLocation: 'middle',
-      nameGap: 50,
+      nameGap: 70,
       nameTextStyle: {
         color: '#6B7280',
         fontSize: 12,

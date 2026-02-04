@@ -151,12 +151,28 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
     refs,
   });
 
+  // Build connection info for health endpoint (excluding sensitive data)
+  const connectionInfo = {
+    name: defaultConnection.name,
+    type: defaultConnection.type,
+    ...(defaultConnection.type === 'duckdb' && {
+      path: (defaultConnection as DuckDBConnection).config.path,
+    }),
+    ...(defaultConnection.type === 'postgres' && {
+      host: (defaultConnection as PostgresConnection).config.host,
+      port: (defaultConnection as PostgresConnection).config.port,
+      database: (defaultConnection as PostgresConnection).config.database,
+      schema: (defaultConnection as PostgresConnection).config.schema,
+    }),
+  };
+
   // Register API routes
   fastify.get('/api/health', async () => ({
     status: 'ok',
     version: VERSION,
     project: project.name,
     environment: process.env.NODE_ENV || 'development',
+    connection: connectionInfo,
   }));
 
   // Config and chart routes
@@ -202,11 +218,35 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
     }
   }
 
+  // Helper to build models and refs from configLoader
+  function buildModelsAndRefs() {
+    const models: Record<string, { metadata: ModelMetadata; sql: string }> = {};
+    const refs: Record<string, string> = {};
+
+    for (const model of configLoader.getModels()) {
+      models[model.metadata.name] = {
+        metadata: model.metadata,
+        sql: model.sql,
+      };
+      refs[model.metadata.name] = model.metadata.name;
+    }
+
+    // Add base table refs
+    refs['orders'] = 'orders';
+    refs['customers'] = 'customers';
+    refs['products'] = 'products';
+
+    return { models, refs };
+  }
+
   // Setup file watching for hot reload
   if (watch) {
     configLoader.startWatching();
     configLoader.onChange(() => {
       fastify.log.info('Config reloaded');
+      // Update the compiler with new models
+      const { models: newModels, refs: newRefs } = buildModelsAndRefs();
+      queryService.updateCompiler({ models: newModels, refs: newRefs });
       // Invalidate all cache on config change
       queryService.invalidateAll();
     });
