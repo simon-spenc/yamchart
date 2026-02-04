@@ -28,3 +28,12 @@ export function useSaveDashboard(id: string) {
     },
   });
 }
+
+export function useRefreshDashboard() {
+  const queryClient = useQueryClient();
+
+  return () => {
+    // Invalidate all chart data queries
+    queryClient.invalidateQueries({ queryKey: ['chartData'] });
+  };
+}

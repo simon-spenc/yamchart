@@ -1,5 +1,7 @@
 import type { EChartsOption } from 'echarts';
+import { forwardRef } from 'react';
 import { EChart } from './EChart';
+import type { EChartHandle } from './EChart';
 import type { AxisConfig } from '../../api/types';
 import { format, parseISO } from 'date-fns';
 
@@ -27,13 +29,10 @@ function strftimeToDateFns(strftimeFormat: string): string {
     .replace(/%P/g, 'a');
 }
 
-export function AreaChart({
-  data,
-  xAxis,
-  yAxis,
-  height = 400,
-  loading = false,
-}: AreaChartProps) {
+export const AreaChart = forwardRef<EChartHandle, AreaChartProps>(function AreaChart(
+  { data, xAxis, yAxis, height = 400, loading = false },
+  ref
+) {
   const xValues = data.map((row) => {
     const value = row[xAxis.field];
     if (xAxis.type === 'temporal' && typeof value === 'string') {
@@ -140,5 +139,5 @@ export function AreaChart({
     animationDuration: 300,
   };
 
-  return <EChart option={option} height={height} loading={loading} />;
-}
+  return <EChart ref={ref} option={option} height={height} loading={loading} />;
+});

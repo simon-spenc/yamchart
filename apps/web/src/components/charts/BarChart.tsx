@@ -1,5 +1,7 @@
 import type { EChartsOption } from 'echarts';
+import { forwardRef } from 'react';
 import { EChart } from './EChart';
+import type { EChartHandle } from './EChart';
 import type { AxisConfig } from '../../api/types';
 
 interface BarChartProps {
@@ -11,14 +13,10 @@ interface BarChartProps {
   horizontal?: boolean;
 }
 
-export function BarChart({
-  data,
-  xAxis,
-  yAxis,
-  height = 400,
-  loading = false,
-  horizontal = false,
-}: BarChartProps) {
+export const BarChart = forwardRef<EChartHandle, BarChartProps>(function BarChart(
+  { data, xAxis, yAxis, height = 400, loading = false, horizontal = false },
+  ref
+) {
   const xValues = data.map((row) => String(row[xAxis.field] ?? ''));
   const yValues = data.map((row) => {
     const value = row[yAxis.field];
@@ -120,5 +118,5 @@ export function BarChart({
     animationDuration: 300,
   };
 
-  return <EChart option={option} height={height} loading={loading} />;
-}
+  return <EChart ref={ref} option={option} height={height} loading={loading} />;
+});

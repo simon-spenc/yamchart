@@ -1,5 +1,7 @@
 import type { EChartsOption } from 'echarts';
+import { forwardRef } from 'react';
 import { EChart } from './EChart';
+import type { EChartHandle } from './EChart';
 import type { AxisConfig } from '../../api/types';
 
 interface PieChartProps {
@@ -21,13 +23,10 @@ const COLORS = [
   '#84CC16', // lime
 ];
 
-export function PieChart({
-  data,
-  xAxis,
-  yAxis,
-  height = 400,
-  loading = false,
-}: PieChartProps) {
+export const PieChart = forwardRef<EChartHandle, PieChartProps>(function PieChart(
+  { data, xAxis, yAxis, height = 400, loading = false },
+  ref
+) {
   const pieData = data.map((row, index) => {
     const rawValue = row[yAxis.field];
     const value = typeof rawValue === 'number'
@@ -103,5 +102,5 @@ export function PieChart({
     animationDuration: 300,
   };
 
-  return <EChart option={option} height={height} loading={loading} />;
-}
+  return <EChart ref={ref} option={option} height={height} loading={loading} />;
+});

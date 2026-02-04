@@ -1,6 +1,6 @@
 import ReactECharts from 'echarts-for-react';
-import type { EChartsOption } from 'echarts';
-import { useRef, useEffect } from 'react';
+import type { EChartsOption, ECharts } from 'echarts';
+import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 
 interface EChartProps {
   option: EChartsOption;
@@ -9,13 +9,29 @@ interface EChartProps {
   onEvents?: Record<string, (params: unknown) => void>;
 }
 
-export function EChart({
-  option,
-  height = 400,
-  loading = false,
-  onEvents,
-}: EChartProps) {
+export interface EChartHandle {
+  getDataURL: (type: 'png' | 'svg') => string | undefined;
+  getInstance: () => ECharts | undefined;
+}
+
+export const EChart = forwardRef<EChartHandle, EChartProps>(function EChart(
+  { option, height = 400, loading = false, onEvents },
+  ref
+) {
   const chartRef = useRef<ReactECharts>(null);
+
+  useImperativeHandle(ref, () => ({
+    getDataURL: (type: 'png' | 'svg') => {
+      const instance = chartRef.current?.getEchartsInstance();
+      if (!instance) return undefined;
+      return instance.getDataURL({
+        type,
+        pixelRatio: 2,
+        backgroundColor: '#fff',
+      });
+    },
+    getInstance: () => chartRef.current?.getEchartsInstance(),
+  }));
 
   // Handle resize
   useEffect(() => {
@@ -37,4 +53,4 @@ export function EChart({
       opts={{ renderer: 'svg' }}
     />
   );
-}
+});

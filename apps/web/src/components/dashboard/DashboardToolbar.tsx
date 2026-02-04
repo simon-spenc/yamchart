@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { clsx } from 'clsx';
-import { useBranches, useCheckoutBranch, useSaveDashboard } from '../../hooks';
+import { useBranches, useCheckoutBranch, useSaveDashboard, useRefreshDashboard } from '../../hooks';
 import { useEditMode } from './EditModeContext';
+import { useIsFetching } from '@tanstack/react-query';
 
 interface DashboardToolbarProps {
   dashboardId: string;
@@ -19,8 +20,14 @@ export function DashboardToolbar({
   const { data: branchesData } = useBranches();
   const checkoutBranch = useCheckoutBranch();
   const saveDashboard = useSaveDashboard(dashboardId);
+  const refreshDashboard = useRefreshDashboard();
+  const isFetching = useIsFetching({ queryKey: ['chartData'] });
 
   const [showBranchDropdown, setShowBranchDropdown] = useState(false);
+
+  const handleRefresh = () => {
+    refreshDashboard();
+  };
 
   const handleSave = async () => {
     if (!pendingLayout) return;
@@ -115,12 +122,34 @@ export function DashboardToolbar({
             </button>
           </>
         ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-          >
-            Edit Layout
-          </button>
+          <>
+            <button
+              onClick={handleRefresh}
+              disabled={isFetching > 0}
+              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md disabled:opacity-50"
+              title="Refresh all charts"
+            >
+              <svg
+                className={clsx('w-5 h-5', isFetching > 0 && 'animate-spin')}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            >
+              Edit Layout
+            </button>
+          </>
         )}
       </div>
     </div>

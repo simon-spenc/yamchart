@@ -1,5 +1,7 @@
 import type { EChartsOption } from 'echarts';
+import { forwardRef } from 'react';
 import { EChart } from './EChart';
+import type { EChartHandle } from './EChart';
 import type { AxisConfig } from '../../api/types';
 
 interface ScatterChartProps {
@@ -10,13 +12,10 @@ interface ScatterChartProps {
   loading?: boolean;
 }
 
-export function ScatterChart({
-  data,
-  xAxis,
-  yAxis,
-  height = 400,
-  loading = false,
-}: ScatterChartProps) {
+export const ScatterChart = forwardRef<EChartHandle, ScatterChartProps>(function ScatterChart(
+  { data, xAxis, yAxis, height = 400, loading = false },
+  ref
+) {
   const scatterData = data.map((row) => {
     const xVal = row[xAxis.field];
     const yVal = row[yAxis.field];
@@ -107,5 +106,5 @@ export function ScatterChart({
     animationDuration: 300,
   };
 
-  return <EChart option={option} height={height} loading={loading} />;
-}
+  return <EChart ref={ref} option={option} height={height} loading={loading} />;
+});
