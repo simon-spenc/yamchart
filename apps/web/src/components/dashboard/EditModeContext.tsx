@@ -13,6 +13,7 @@ interface EditModeContextValue {
   currentLayout: DashboardLayout | null;
   addWidget: (widget: DashboardWidget) => void;
   removeWidget: (rowIndex: number, widgetIndex: number) => void;
+  updateWidget: (rowIndex: number, widgetIndex: number, updates: Partial<DashboardWidget>) => void;
 }
 
 const EditModeContext = createContext<EditModeContextValue | null>(null);
@@ -74,6 +75,28 @@ export function EditModeProvider({ children }: { children: ReactNode }) {
     setPendingLayout(newLayout);
   }, [pendingLayout, originalLayout]);
 
+  const updateWidget = useCallback((rowIndex: number, widgetIndex: number, updates: Partial<DashboardWidget>) => {
+    const base = pendingLayout || originalLayout;
+    if (!base) return;
+
+    const newRows = base.rows.map((row, rIdx) => {
+      if (rIdx !== rowIndex) return row;
+
+      const newWidgets = row.widgets.map((widget, wIdx) => {
+        if (wIdx !== widgetIndex) return widget;
+        return { ...widget, ...updates };
+      });
+      return { ...row, widgets: newWidgets };
+    });
+
+    const newLayout: DashboardLayout = {
+      ...base,
+      rows: newRows,
+    };
+
+    setPendingLayout(newLayout);
+  }, [pendingLayout, originalLayout]);
+
   return (
     <EditModeContext.Provider
       value={{
@@ -87,6 +110,7 @@ export function EditModeProvider({ children }: { children: ReactNode }) {
         currentLayout,
         addWidget,
         removeWidget,
+        updateWidget,
       }}
     >
       {children}

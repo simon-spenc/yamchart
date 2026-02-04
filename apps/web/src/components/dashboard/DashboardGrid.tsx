@@ -28,7 +28,7 @@ function getWidgetId(widget: DashboardWidget): string {
 }
 
 export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
-  const { isEditing, setPendingLayout, setOriginalLayout, currentLayout, removeWidget } = useEditMode();
+  const { isEditing, setPendingLayout, setOriginalLayout, currentLayout, removeWidget, updateWidget } = useEditMode();
   const lastLayoutRef = useRef<string>('');
 
   // Set the original layout when layout prop changes (compare by JSON to avoid infinite loops)
@@ -134,6 +134,10 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
     removeWidget(rowIndex, widgetIndex);
   }, [removeWidget]);
 
+  const handleUpdateTextContent = useCallback((rowIndex: number, widgetIndex: number, content: string) => {
+    updateWidget(rowIndex, widgetIndex, { content });
+  }, [updateWidget]);
+
   return (
     <>
       {!isEditing && (
@@ -161,7 +165,10 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
                 <ChartWidget chartRef={widget.ref} />
               )}
               {widget.type === 'text' && widget.content && (
-                <TextWidget content={widget.content} />
+                <TextWidget
+                  content={widget.content}
+                  onUpdate={(content) => handleUpdateTextContent(rowIndex, widgetIndex, content)}
+                />
               )}
             </WidgetWrapper>
           </div>

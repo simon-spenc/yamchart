@@ -19,11 +19,11 @@ export function WidgetWrapper({ children, onRemove }: WidgetWrapperProps) {
     >
       {isEditing && (
         <>
-          {/* Drag handle */}
-          <div className="absolute top-2 left-2 z-10">
-            <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center cursor-grab active:cursor-grabbing">
+          {/* Drag handle - semi-transparent */}
+          <div className="absolute top-1 left-1 z-10">
+            <div className="w-5 h-5 bg-white/70 hover:bg-gray-100 rounded flex items-center justify-center cursor-grab active:cursor-grabbing transition-colors">
               <svg
-                className="w-4 h-4 text-gray-400"
+                className="w-3 h-3 text-gray-400"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -32,19 +32,19 @@ export function WidgetWrapper({ children, onRemove }: WidgetWrapperProps) {
             </div>
           </div>
 
-          {/* Delete button */}
+          {/* Delete button - semi-transparent */}
           {onRemove && (
-            <div className="absolute top-2 right-2 z-10">
+            <div className="absolute top-1 right-1 z-10">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove();
                 }}
-                className="w-6 h-6 bg-red-100 hover:bg-red-200 rounded flex items-center justify-center transition-colors"
+                className="w-5 h-5 bg-white/70 hover:bg-red-100 rounded flex items-center justify-center transition-colors"
                 title="Remove widget"
               >
                 <svg
-                  className="w-4 h-4 text-red-600"
+                  className="w-3 h-3 text-red-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -61,7 +61,9 @@ export function WidgetWrapper({ children, onRemove }: WidgetWrapperProps) {
           )}
         </>
       )}
-      {children}
+      <div className={clsx('h-full', isEditing && 'pt-6')}>
+        {children}
+      </div>
     </div>
   );
 }
