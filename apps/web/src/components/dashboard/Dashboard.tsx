@@ -32,13 +32,13 @@ export function Dashboard({ dashboardId, branch }: DashboardProps) {
 
   return (
     <EditModeProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="h-full flex flex-col bg-gray-50">
         <DashboardToolbar
           dashboardId={dashboardId}
           title={dashboard.title}
           currentBranch={dashboard.branch}
         />
-        <div className="p-6">
+        <div className="flex-1 overflow-auto p-6">
           {dashboard.filters && dashboard.filters.length > 0 && (
             <DashboardFilters filters={dashboard.filters} />
           )}

@@ -1,14 +1,54 @@
-import { useState } from 'react';
-import { Header } from './components/Header';
+import { useState, useEffect, useCallback } from 'react';
+import { AppLayout } from './components/layout';
 import { ChartView } from './components/ChartView';
 import { Dashboard } from './components/dashboard';
 import { useConfig, useDashboards } from './hooks';
 
+function parseHash(hash: string): { type: 'dashboard' | 'chart'; name: string } | null {
+  const match = hash.match(/^#?\/(dashboards|charts)\/(.+)$/);
+  if (match && match[1] && match[2]) {
+    return {
+      type: match[1] === 'dashboards' ? 'dashboard' : 'chart',
+      name: decodeURIComponent(match[2]),
+    };
+  }
+  return null;
+}
+
 function App() {
   const { data: config, isLoading: configLoading } = useConfig();
   const { data: dashboards, isLoading: dashboardsLoading } = useDashboards();
-  const [view, setView] = useState<'chart' | 'dashboard'>('dashboard');
-  const [selectedDashboard, setSelectedDashboard] = useState<string | null>(null);
+
+  const [currentPath, setCurrentPath] = useState(() => {
+    return window.location.hash.replace(/^#/, '') || '';
+  });
+
+  // Listen for hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      setCurrentPath(window.location.hash.replace(/^#/, '') || '');
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  const navigate = useCallback((path: string) => {
+    window.location.hash = path;
+    setCurrentPath(path);
+  }, []);
+
+  // Set initial route once data loads
+  useEffect(() => {
+    if (configLoading || dashboardsLoading) return;
+    if (currentPath) return; // Already have a path
+
+    // Default to first dashboard, or first chart
+    if (dashboards && dashboards.length > 0 && dashboards[0]) {
+      navigate(`/dashboards/${dashboards[0].name}`);
+    } else if (config?.charts && config.charts.length > 0 && config.charts[0]) {
+      navigate(`/charts/${config.charts[0].name}`);
+    }
+  }, [configLoading, dashboardsLoading, dashboards, config, currentPath, navigate]);
 
   if (configLoading || dashboardsLoading) {
     return (
@@ -18,24 +58,32 @@ function App() {
     );
   }
 
-  // If dashboards exist, show dashboard view by default
-  const hasDashboards = dashboards && dashboards.length > 0;
-  const activeDashboard = selectedDashboard || dashboards?.[0]?.name;
+  const parsed = parseHash(currentPath);
 
-  if (hasDashboards && view === 'dashboard' && activeDashboard) {
-    return <Dashboard dashboardId={activeDashboard} />;
-  }
+  const renderContent = () => {
+    if (!parsed) {
+      return (
+        <div className="flex items-center justify-center h-full text-gray-500">
+          Select a dashboard or chart from the sidebar
+        </div>
+      );
+    }
 
-  // Fallback to chart view
-  const chartName = config?.charts[0]?.name || 'revenue-trend';
+    if (parsed.type === 'dashboard') {
+      return <Dashboard dashboardId={parsed.name} />;
+    }
+
+    return (
+      <div className="p-6">
+        <ChartView chartName={parsed.name} />
+      </div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <ChartView chartName={chartName} />
-      </main>
-    </div>
+    <AppLayout currentPath={currentPath} onNavigate={navigate}>
+      {renderContent()}
+    </AppLayout>
   );
 }
 
