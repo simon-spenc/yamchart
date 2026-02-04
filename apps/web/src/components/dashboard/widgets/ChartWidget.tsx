@@ -12,7 +12,7 @@ import {
   ChartActions,
 } from '../../charts';
 import type { EChartHandle } from '../../charts';
-import { exportToCSV, downloadDataURL } from '../../../utils/export';
+import { exportToCSV, downloadDataURL, exportChartAsPDF } from '../../../utils/export';
 
 interface ChartWidgetProps {
   chartRef: string;
@@ -45,6 +45,13 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
     const dataURL = echartRef.current?.getDataURL('svg');
     if (dataURL && chartConfig) {
       downloadDataURL(dataURL, `${chartConfig.name || chartRef}.svg`);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    const dataURL = echartRef.current?.getDataURL('png');
+    if (dataURL && chartConfig) {
+      await exportChartAsPDF(dataURL, chartConfig.name || chartRef, chartConfig.title);
     }
   };
 
@@ -226,6 +233,7 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
             onExportCSV={handleExportCSV}
             onExportPNG={isEChartType ? handleExportPNG : handleExportCSV}
             onExportSVG={isEChartType ? handleExportSVG : handleExportCSV}
+            onExportPDF={isEChartType ? handleExportPDF : undefined}
             isRefreshing={isFetching}
           />
         </div>

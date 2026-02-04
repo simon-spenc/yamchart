@@ -24,11 +24,23 @@ export const EChart = forwardRef<EChartHandle, EChartProps>(function EChart(
     getDataURL: (type: 'png' | 'svg') => {
       const instance = chartRef.current?.getEchartsInstance();
       if (!instance) return undefined;
-      return instance.getDataURL({
-        type,
-        pixelRatio: 2,
-        backgroundColor: '#fff',
-      });
+
+      // For PNG, we need to render to canvas first
+      // Since we use SVG renderer, we'll use the built-in conversion
+      try {
+        return instance.getDataURL({
+          type: type === 'png' ? 'png' : 'svg',
+          pixelRatio: 2,
+          backgroundColor: '#fff',
+        });
+      } catch {
+        // Fallback: try getting as SVG and converting if needed
+        return instance.getDataURL({
+          type: 'svg',
+          pixelRatio: 2,
+          backgroundColor: '#fff',
+        });
+      }
     },
     getInstance: () => chartRef.current?.getEchartsInstance(),
   }));
@@ -50,7 +62,7 @@ export const EChart = forwardRef<EChartHandle, EChartProps>(function EChart(
       style={{ height, width: '100%' }}
       showLoading={loading}
       onEvents={onEvents}
-      opts={{ renderer: 'svg' }}
+      opts={{ renderer: 'canvas' }}
     />
   );
 });

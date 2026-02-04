@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useDashboard } from '../../hooks';
 import { EditModeProvider } from './EditModeContext';
 import { DashboardToolbar } from './DashboardToolbar';
@@ -11,6 +12,7 @@ interface DashboardProps {
 
 export function Dashboard({ dashboardId, branch }: DashboardProps) {
   const { data: dashboard, isLoading, error } = useDashboard(dashboardId, branch);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   if (isLoading) {
     return (
@@ -37,8 +39,9 @@ export function Dashboard({ dashboardId, branch }: DashboardProps) {
           dashboardId={dashboardId}
           title={dashboard.title}
           currentBranch={dashboard.branch}
+          contentRef={contentRef}
         />
-        <div className="flex-1 overflow-auto p-6">
+        <div ref={contentRef} className="flex-1 overflow-auto p-6">
           {dashboard.filters && dashboard.filters.length > 0 && (
             <DashboardFilters filters={dashboard.filters} />
           )}

@@ -1,6 +1,8 @@
 import { clsx } from 'clsx';
 import { useChartData } from '../../../hooks/useChartData';
-import { useChart } from '../../../hooks/useChart';
+import { useChart, useRefreshChart } from '../../../hooks';
+import { ChartActions } from '../../charts';
+import { exportToCSV } from '../../../utils/export';
 
 interface KpiWidgetProps {
   chartRef: string;
@@ -46,7 +48,18 @@ function formatChange(value: number, type: 'percent_change' | 'absolute'): strin
 
 export function KpiWidget({ chartRef }: KpiWidgetProps) {
   const { data: chartConfig } = useChart(chartRef);
-  const { data, isLoading, error } = useChartData(chartRef);
+  const { data, isLoading, error, isFetching } = useChartData(chartRef);
+  const refreshChart = useRefreshChart();
+
+  const handleRefresh = () => {
+    refreshChart(chartRef);
+  };
+
+  const handleExportCSV = () => {
+    if (!data || !chartConfig) return;
+    const filename = chartConfig.name || chartRef;
+    exportToCSV(data.rows, data.columns, filename);
+  };
 
   if (isLoading) {
     return (
@@ -95,26 +108,38 @@ export function KpiWidget({ chartRef }: KpiWidgetProps) {
   }
 
   return (
-    <div className="h-full flex flex-col justify-center p-4">
-      <div className="text-3xl font-bold text-gray-900">{formattedValue}</div>
-      <div className="text-sm text-gray-500 mt-1">{chartConfig?.title}</div>
-      {change !== null && (
-        <div className="mt-2 flex items-center gap-2">
-          <span
-            className={clsx(
-              'text-sm font-medium px-2 py-0.5 rounded',
-              change >= 0
-                ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700'
+    <div className="h-full flex flex-col p-4 group relative">
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <ChartActions
+          onRefresh={handleRefresh}
+          onExportCSV={handleExportCSV}
+          onExportPNG={handleExportCSV}
+          onExportSVG={handleExportCSV}
+          isRefreshing={isFetching}
+          hideImageExport
+        />
+      </div>
+      <div className="flex-1 flex flex-col justify-center">
+        <div className="text-3xl font-bold text-gray-900">{formattedValue}</div>
+        <div className="text-sm text-gray-500 mt-1">{chartConfig?.title}</div>
+        {change !== null && (
+          <div className="mt-2 flex items-center gap-2">
+            <span
+              className={clsx(
+                'text-sm font-medium px-2 py-0.5 rounded',
+                change >= 0
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700'
+              )}
+            >
+              {formatChange(change, changeType)}
+            </span>
+            {config.comparison?.label && (
+              <span className="text-xs text-gray-400">{config.comparison.label}</span>
             )}
-          >
-            {formatChange(change, changeType)}
-          </span>
-          {config.comparison?.label && (
-            <span className="text-xs text-gray-400">{config.comparison.label}</span>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
