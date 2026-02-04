@@ -1,6 +1,6 @@
 {
   "name": "@yamchart/server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Yamchart server - Fastify API for Git-native BI dashboards",
   "type": "module",
   "license": "MIT",

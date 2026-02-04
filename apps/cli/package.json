@@ -1,6 +1,6 @@
 {
   "name": "yamchart",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Git-native business intelligence dashboards",
   "type": "module",
   "license": "MIT",

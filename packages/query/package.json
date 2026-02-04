@@ -1,6 +1,6 @@
 {
   "name": "@yamchart/query",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Yamchart SQL templating and query compilation",
   "type": "module",
   "license": "MIT",

@@ -10,7 +10,7 @@ export function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-semibold text-gray-900">
-              {config?.name || 'Dashbook'}
+              {config?.name || 'Yamchart'}
             </h1>
             {config?.description && (
               <span className="text-sm text-gray-500">{config.description}</span>

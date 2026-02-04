@@ -11,9 +11,14 @@ import type { DuckDBConnection, PostgresConnection, ModelMetadata } from '@yamch
 import { initAuthServer, authMiddleware, orgMiddleware } from './middleware/index.js';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { access } from 'fs/promises';
+import { access, readFile } from 'fs/promises';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Read version from package.json
+const packageJsonPath = join(__dirname, '..', 'package.json');
+const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf-8'));
+const VERSION = packageJson.version;
 
 export interface AuthConfig {
   supabaseUrl: string;
@@ -149,7 +154,7 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
   // Register API routes
   fastify.get('/api/health', async () => ({
     status: 'ok',
-    version: '0.1.0',
+    version: VERSION,
     project: project.name,
     environment: process.env.NODE_ENV || 'development',
   }));

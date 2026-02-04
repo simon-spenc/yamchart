@@ -1,6 +1,6 @@
 {
   "name": "@yamchart/auth",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Yamchart authentication module",
   "type": "module",
   "license": "MIT",
