@@ -32,6 +32,8 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
           h: Math.ceil(row.height / 50),
           minW: widget.type === 'chart' ? 3 : 2,
           minH: 2,
+          // Mark as static when not editing to prevent any interaction
+          static: !isEditing,
         });
         widgetMap.set(key, { widget, rowIndex });
         xOffset += widget.cols;
@@ -40,7 +42,7 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
     });
 
     return { gridLayout: items, widgets: widgetMap };
-  }, [layout]);
+  }, [layout, isEditing]);
 
   const handleLayoutChange = useCallback(
     (newGridLayout: LayoutItem[]) => {
@@ -91,30 +93,35 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
   );
 
   return (
-    <GridLayout
-      className="layout"
-      layout={gridLayout}
-      cols={12}
-      rowHeight={50}
-      width={1200}
-      isDraggable={isEditing}
-      isResizable={isEditing}
-      onLayoutChange={(newLayout: unknown) => handleLayoutChange(newLayout as LayoutItem[])}
-      draggableHandle=".cursor-grab"
-      margin={[layout.gap ?? 16, layout.gap ?? 16] as [number, number]}
-    >
-      {Array.from(widgets.entries()).map(([key, { widget }]) => (
-        <div key={key} className="h-full">
-          <WidgetWrapper>
-            {widget.type === 'chart' && widget.ref && (
-              <ChartWidget chartRef={widget.ref} />
-            )}
-            {widget.type === 'text' && widget.content && (
-              <TextWidget content={widget.content} />
-            )}
-          </WidgetWrapper>
-        </div>
-      ))}
-    </GridLayout>
+    <>
+      {!isEditing && (
+        <style>{`.react-resizable-handle { display: none !important; }`}</style>
+      )}
+      <GridLayout
+        className="layout"
+        layout={gridLayout}
+        cols={12}
+        rowHeight={50}
+        width={1200}
+        isDraggable={isEditing}
+        isResizable={isEditing}
+        onLayoutChange={(newLayout: unknown) => handleLayoutChange(newLayout as LayoutItem[])}
+        draggableHandle=".cursor-grab"
+        margin={[layout.gap ?? 16, layout.gap ?? 16] as [number, number]}
+      >
+        {Array.from(widgets.entries()).map(([key, { widget }]) => (
+          <div key={key} className="h-full">
+            <WidgetWrapper>
+              {widget.type === 'chart' && widget.ref && (
+                <ChartWidget chartRef={widget.ref} />
+              )}
+              {widget.type === 'text' && widget.content && (
+                <TextWidget content={widget.content} />
+              )}
+            </WidgetWrapper>
+          </div>
+        ))}
+      </GridLayout>
+    </>
   );
 }
