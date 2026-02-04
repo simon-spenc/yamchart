@@ -1,6 +1,6 @@
 import { useChart, useChartData } from '../../../hooks';
 import { KpiWidget } from './KpiWidget';
-import { LineChart, BarChart, AreaChart, PieChart, ScatterChart } from '../../charts';
+import { LineChart, BarChart, AreaChart, PieChart, ScatterChart, TableChart, MetricChart } from '../../charts';
 
 interface ChartWidgetProps {
   chartRef: string;
@@ -166,6 +166,40 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
             />
           </div>
         </div>
+      );
+
+    case 'table':
+      return (
+        <div className="h-full p-2 flex flex-col">
+          <div className="text-sm font-medium text-gray-700 mb-2 px-2 flex-shrink-0">
+            {chartConfig.title}
+          </div>
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <TableChart
+              data={chartData.rows}
+              columns={chartData.columns}
+              height="100%"
+              loading={isLoadingData}
+            />
+          </div>
+        </div>
+      );
+
+    case 'metric':
+      if (!chartConfig.chart.y) {
+        return (
+          <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+            Missing value configuration
+          </div>
+        );
+      }
+      return (
+        <MetricChart
+          data={chartData.rows}
+          yAxis={chartConfig.chart.y}
+          title={chartConfig.title}
+          loading={isLoadingData}
+        />
       );
 
     default:
