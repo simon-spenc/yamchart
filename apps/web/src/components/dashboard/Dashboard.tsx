@@ -2,6 +2,7 @@ import { useDashboard } from '../../hooks';
 import { EditModeProvider } from './EditModeContext';
 import { DashboardToolbar } from './DashboardToolbar';
 import { DashboardGrid } from './DashboardGrid';
+import { DashboardFilters } from './DashboardFilters';
 
 interface DashboardProps {
   dashboardId: string;
@@ -38,6 +39,9 @@ export function Dashboard({ dashboardId, branch }: DashboardProps) {
           currentBranch={dashboard.branch}
         />
         <div className="p-6">
+          {dashboard.filters && dashboard.filters.length > 0 && (
+            <DashboardFilters filters={dashboard.filters} />
+          )}
           <DashboardGrid layout={dashboard.layout} />
         </div>
       </div>

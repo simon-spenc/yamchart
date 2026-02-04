@@ -99,6 +99,31 @@ GROUP BY 1
     expect(result.params.end_date).toBe('2026-01-31');
   });
 
+  it('expands custom date range', () => {
+    const chart: Chart = {
+      name: 'revenue-trend',
+      title: 'Revenue Trend',
+      source: { model: 'monthly_revenue' },
+      parameters: [
+        { name: 'date_range', type: 'date_range', default: 'last_30_days' },
+      ],
+      chart: {
+        type: 'line',
+        x: { field: 'period', type: 'temporal' },
+        y: { field: 'revenue', type: 'quantitative' },
+      },
+    };
+
+    const result = compiler.compile(chart, {
+      date_range: { type: 'custom', start: '2025-06-15', end: '2025-07-20' },
+    });
+
+    expect(result.sql).toContain("'2025-06-15'");
+    expect(result.sql).toContain("'2025-07-20'");
+    expect(result.params.start_date).toBe('2025-06-15');
+    expect(result.params.end_date).toBe('2025-07-20');
+  });
+
   it('compiles inline SQL', () => {
     const chart: Chart = {
       name: 'quick-query',

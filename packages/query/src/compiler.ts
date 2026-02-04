@@ -1,6 +1,6 @@
 import type { Chart, ModelMetadata } from '@yamchart/schema';
 import { renderTemplate, createTemplateContext, type ModelRefs } from './template.js';
-import { expandDatePreset, isDatePreset } from './presets.js';
+import { expandDatePreset, isDatePreset, isCustomDateRange, expandCustomDateRange } from './presets.js';
 import { createHash } from 'node:crypto';
 
 export interface CompiledQuery {
@@ -104,8 +104,12 @@ export class QueryCompiler {
   private expandPresets(params: Record<string, unknown>): Record<string, unknown> {
     const expanded: Record<string, unknown> = { ...params };
 
-    // Check for date_range preset and expand it
-    if (typeof params.date_range === 'string' && isDatePreset(params.date_range)) {
+    // Check for date_range and expand it (preset string or custom range object)
+    if (isCustomDateRange(params.date_range)) {
+      const dateRange = expandCustomDateRange(params.date_range);
+      expanded.start_date = dateRange.start_date;
+      expanded.end_date = dateRange.end_date;
+    } else if (typeof params.date_range === 'string' && isDatePreset(params.date_range)) {
       const dateRange = expandDatePreset(params.date_range);
       if (dateRange) {
         expanded.start_date = dateRange.start_date;

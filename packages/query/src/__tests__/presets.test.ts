@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { expandDatePreset, DATE_PRESETS } from '../presets.js';
+import {
+  expandDatePreset,
+  DATE_PRESETS,
+  isCustomDateRange,
+  expandCustomDateRange,
+} from '../presets.js';
 
 describe('expandDatePreset', () => {
   beforeEach(() => {
@@ -77,5 +82,35 @@ describe('expandDatePreset', () => {
     expect(DATE_PRESETS).toContain('last_7_days');
     expect(DATE_PRESETS).toContain('last_30_days');
     expect(DATE_PRESETS).toContain('year_to_date');
+  });
+});
+
+describe('isCustomDateRange', () => {
+  it('returns true for valid custom date range', () => {
+    expect(isCustomDateRange({ type: 'custom', start: '2026-01-01', end: '2026-01-31' })).toBe(true);
+  });
+
+  it('returns false for preset string', () => {
+    expect(isCustomDateRange('last_30_days')).toBe(false);
+  });
+
+  it('returns false for null', () => {
+    expect(isCustomDateRange(null)).toBe(false);
+  });
+
+  it('returns false for object without type', () => {
+    expect(isCustomDateRange({ start: '2026-01-01', end: '2026-01-31' })).toBe(false);
+  });
+
+  it('returns false for object with wrong type', () => {
+    expect(isCustomDateRange({ type: 'preset', start: '2026-01-01', end: '2026-01-31' })).toBe(false);
+  });
+});
+
+describe('expandCustomDateRange', () => {
+  it('expands custom range to start_date and end_date', () => {
+    const result = expandCustomDateRange({ type: 'custom', start: '2026-01-15', end: '2026-01-20' });
+    expect(result.start_date).toBe('2026-01-15');
+    expect(result.end_date).toBe('2026-01-20');
   });
 });

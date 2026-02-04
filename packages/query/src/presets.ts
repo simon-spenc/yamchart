@@ -16,6 +16,36 @@ export interface DateRange {
   end_date: string;
 }
 
+export interface CustomDateRange {
+  type: 'custom';
+  start: string;
+  end: string;
+}
+
+/**
+ * Check if a value is a custom date range object.
+ */
+export function isCustomDateRange(value: unknown): value is CustomDateRange {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'type' in value &&
+    (value as CustomDateRange).type === 'custom' &&
+    'start' in value &&
+    'end' in value
+  );
+}
+
+/**
+ * Expand a custom date range into start_date and end_date.
+ */
+export function expandCustomDateRange(range: CustomDateRange): DateRange {
+  return {
+    start_date: range.start,
+    end_date: range.end,
+  };
+}
+
 export const DATE_PRESETS = [
   'last_7_days',
   'last_30_days',

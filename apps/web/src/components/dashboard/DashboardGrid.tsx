@@ -104,7 +104,7 @@ export function DashboardGrid({ layout, onLayoutChange }: DashboardGridProps) {
       margin={[layout.gap ?? 16, layout.gap ?? 16] as [number, number]}
     >
       {Array.from(widgets.entries()).map(([key, { widget }]) => (
-        <div key={key}>
+        <div key={key} className="h-full">
           <WidgetWrapper>
             {widget.type === 'chart' && widget.ref && (
               <ChartWidget chartRef={widget.ref} />

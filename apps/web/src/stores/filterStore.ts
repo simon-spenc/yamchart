@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
-export type FilterValue = string | number | boolean | string[] | null;
+export interface CustomDateRange {
+  type: 'custom';
+  start: string;
+  end: string;
+}
+
+export type FilterValue = string | number | boolean | string[] | CustomDateRange | null;
 
 export interface FilterStore {
   // State

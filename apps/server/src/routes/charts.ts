@@ -82,4 +82,41 @@ export async function chartRoutes(
       return { success: true, message: `Cache invalidated for chart: ${name}` };
     }
   );
+
+  // Get dynamic parameter options
+  fastify.get<{ Params: { chartName: string; paramName: string } }>(
+    '/api/charts/:chartName/parameters/:paramName/options',
+    async (request, reply) => {
+      const { chartName, paramName } = request.params;
+
+      const chart = configLoader.getChartByName(chartName);
+      if (!chart) {
+        return reply.status(404).send({ error: `Chart not found: ${chartName}` });
+      }
+
+      const param = chart.parameters?.find((p) => p.name === paramName);
+      if (!param) {
+        return reply.status(404).send({ error: `Parameter not found: ${paramName}` });
+      }
+
+      if (param.type !== 'dynamic_select' || !param.source) {
+        return reply.status(400).send({
+          error: `Parameter ${paramName} is not a dynamic_select type or has no source`,
+        });
+      }
+
+      try {
+        const result = await queryService.executeParameterOptions(
+          param.source.model,
+          param.source.value_field,
+          param.source.label_field
+        );
+
+        return { options: result };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to fetch options';
+        return reply.status(500).send({ error: message });
+      }
+    }
+  );
 }

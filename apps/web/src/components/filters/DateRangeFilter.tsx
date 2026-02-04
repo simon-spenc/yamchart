@@ -1,4 +1,7 @@
+import { useState } from 'react';
+import { format } from 'date-fns';
 import { useFilterStore } from '../../stores/filterStore';
+import { DatePicker } from './DatePicker';
 
 const DATE_PRESETS = [
   { value: 'last_7_days', label: 'Last 7 days' },
@@ -10,7 +13,16 @@ const DATE_PRESETS = [
   { value: 'previous_month', label: 'Previous month' },
   { value: 'previous_quarter', label: 'Previous quarter' },
   { value: 'previous_year', label: 'Previous year' },
+  { value: 'custom', label: 'Custom range...' },
 ];
+
+export interface CustomDateRange {
+  type: 'custom';
+  start: string;
+  end: string;
+}
+
+export type DateRangeValue = string | CustomDateRange;
 
 interface DateRangeFilterProps {
   name: string;
@@ -19,22 +31,41 @@ interface DateRangeFilterProps {
   defaultValue?: string;
 }
 
+function isCustomRange(value: unknown): value is CustomDateRange {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'type' in value &&
+    (value as CustomDateRange).type === 'custom'
+  );
+}
+
+function getDisplayValue(value: DateRangeValue): string {
+  if (isCustomRange(value)) {
+    return `${value.start} to ${value.end}`;
+  }
+  return DATE_PRESETS.find((p) => p.value === value)?.label || value;
+}
+
 export function DateRangeFilter({
   name,
   label,
   chartName,
   defaultValue = 'last_30_days',
 }: DateRangeFilterProps) {
+  const [showPicker, setShowPicker] = useState(false);
   const globalFilters = useFilterStore((s) => s.globalFilters);
   const chartFilters = useFilterStore((s) => s.chartFilters);
   const setGlobalFilter = useFilterStore((s) => s.setGlobalFilter);
   const setChartFilter = useFilterStore((s) => s.setChartFilter);
 
-  const currentValue = chartName
-    ? chartFilters[chartName]?.[name] ?? globalFilters[name] ?? defaultValue
-    : globalFilters[name] ?? defaultValue;
+  const currentValue: DateRangeValue = chartName
+    ? (chartFilters[chartName]?.[name] as DateRangeValue) ??
+      (globalFilters[name] as DateRangeValue) ??
+      defaultValue
+    : (globalFilters[name] as DateRangeValue) ?? defaultValue;
 
-  const handleChange = (value: string) => {
+  const handleChange = (value: DateRangeValue) => {
     if (chartName) {
       setChartFilter(chartName, name, value);
     } else {
@@ -42,22 +73,50 @@ export function DateRangeFilter({
     }
   };
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === 'custom') {
+      setShowPicker(true);
+    } else {
+      handleChange(value);
+    }
+  };
+
+  const handleCustomApply = (start: string, end: string) => {
+    handleChange({ type: 'custom', start, end });
+    setShowPicker(false);
+  };
+
+  const selectValue = isCustomRange(currentValue) ? 'custom' : currentValue;
+
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 relative">
       {label && (
         <label className="text-sm font-medium text-gray-700">{label}</label>
       )}
-      <select
-        value={currentValue as string}
-        onChange={(e) => handleChange(e.target.value)}
-        className="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-      >
-        {DATE_PRESETS.map((preset) => (
-          <option key={preset.value} value={preset.value}>
-            {preset.label}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          value={selectValue}
+          onChange={handleSelectChange}
+          className="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[180px]"
+        >
+          {DATE_PRESETS.map((preset) => (
+            <option key={preset.value} value={preset.value}>
+              {preset.value === 'custom' && isCustomRange(currentValue)
+                ? getDisplayValue(currentValue)
+                : preset.label}
+            </option>
+          ))}
+        </select>
+        {showPicker && (
+          <DatePicker
+            startDate={isCustomRange(currentValue) ? currentValue.start : undefined}
+            endDate={isCustomRange(currentValue) ? currentValue.end : undefined}
+            onApply={handleCustomApply}
+            onCancel={() => setShowPicker(false)}
+          />
+        )}
+      </div>
     </div>
   );
 }

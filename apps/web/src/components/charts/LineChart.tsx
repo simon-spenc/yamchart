@@ -8,7 +8,7 @@ interface LineChartProps {
   columns: Column[];
   xAxis: AxisConfig;
   yAxis: AxisConfig;
-  height?: number;
+  height?: number | string;
   loading?: boolean;
 }
 

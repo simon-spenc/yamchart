@@ -18,12 +18,28 @@ export interface QueryResponse {
   meta: QueryMeta;
 }
 
+export interface ParameterSource {
+  model: string;
+  value_field: string;
+  label_field: string;
+}
+
 export interface ChartParameter {
   name: string;
-  type: 'date_range' | 'select' | 'multi_select' | 'text' | 'number';
+  type: 'date_range' | 'select' | 'multi_select' | 'dynamic_select' | 'text' | 'number';
   label?: string;
   default?: string | number | string[];
   options?: Array<string | { value: string; label: string }>;
+  source?: ParameterSource;
+}
+
+export interface ParameterOption {
+  value: string;
+  label: string;
+}
+
+export interface ParameterOptionsResponse {
+  options: ParameterOption[];
 }
 
 export interface AxisConfig {

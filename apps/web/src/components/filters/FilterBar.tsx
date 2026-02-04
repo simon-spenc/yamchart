@@ -1,6 +1,7 @@
 import type { ChartParameter } from '../../api/types';
 import { DateRangeFilter } from './DateRangeFilter';
 import { SelectFilter } from './SelectFilter';
+import { DynamicSelectFilter } from './DynamicSelectFilter';
 
 interface FilterBarProps {
   parameters: ChartParameter[];
@@ -41,6 +42,24 @@ export function FilterBar({ parameters, chartName }: FilterBarProps) {
                 name={param.name}
                 label={label}
                 options={options}
+                chartName={chartName}
+                defaultValue={defaultValue}
+              />
+            );
+
+          case 'dynamic_select':
+            if (!chartName) {
+              return (
+                <div key={param.name} className="text-sm text-gray-500">
+                  {label}: dynamic_select requires chartName
+                </div>
+              );
+            }
+            return (
+              <DynamicSelectFilter
+                key={param.name}
+                name={param.name}
+                label={label}
                 chartName={chartName}
                 defaultValue={defaultValue}
               />

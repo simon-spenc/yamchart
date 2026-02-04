@@ -124,6 +124,8 @@ Available presets:
 - `this_quarter`, `last_quarter`
 - `this_year`, `last_year`
 
+Users can also select "Custom range..." to pick specific dates using a calendar picker.
+
 Injects `start_date` and `end_date` into your SQL model.
 
 ### Select
@@ -155,6 +157,35 @@ parameters:
     default:
       - Electronics
       - Clothing
+```
+
+### Dynamic Select
+
+Populate options from a database query:
+
+```yaml
+parameters:
+  - name: category
+    type: dynamic_select
+    label: Category
+    source:
+      model: category_options    # SQL model that returns options
+      value_field: category_id   # Column for option value
+      label_field: category_name # Column for option label
+    default: ""                  # Empty = "All"
+```
+
+The model returns rows used as options:
+
+```sql
+-- models/category_options.sql
+-- @name: category_options
+
+SELECT DISTINCT
+  category_id,
+  category_name
+FROM products
+ORDER BY category_name
 ```
 
 ## Full Example

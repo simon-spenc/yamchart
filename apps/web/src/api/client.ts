@@ -8,6 +8,7 @@ import type {
   DashboardLayout,
   BranchesResponse,
   SaveDashboardResponse,
+  ParameterOptionsResponse,
 } from './types';
 
 const API_BASE = '/api';
@@ -63,6 +64,14 @@ export const api = {
     fetchJson(`/charts/${encodeURIComponent(name)}/invalidate`, {
       method: 'POST',
     }),
+
+  getParameterOptions: (
+    chartName: string,
+    paramName: string
+  ): Promise<ParameterOptionsResponse> =>
+    fetchJson(
+      `/charts/${encodeURIComponent(chartName)}/parameters/${encodeURIComponent(paramName)}/options`
+    ),
 
   // Dashboards
   getDashboards: (): Promise<DashboardSummary[]> => fetchJson('/dashboards'),

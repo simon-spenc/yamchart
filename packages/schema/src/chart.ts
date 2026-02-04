@@ -113,6 +113,7 @@ const ParameterTypeSchema = z.enum([
   'date_range',
   'select',
   'multi_select',
+  'dynamic_select',
   'text',
   'number',
 ]);

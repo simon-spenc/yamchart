@@ -1,7 +1,7 @@
 import { createServer } from './server.js';
 import { resolve } from 'path';
 
-const projectDir = process.env.DASHBOOK_PROJECT_DIR || process.cwd();
+const projectDir = process.env.YAMCHART_PROJECT_DIR || process.env.DASHBOOK_PROJECT_DIR || process.cwd();
 const port = parseInt(process.env.PORT || '3001', 10);
 const watch = process.env.NODE_ENV !== 'production';
 

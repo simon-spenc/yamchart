@@ -3,9 +3,16 @@ import {
   type Connector,
   type QueryResult,
   type CompilerConfig,
+  renderTemplate,
+  createTemplateContext,
 } from '@yamchart/query';
-import type { Chart } from '@yamchart/schema';
+import type { Chart, ModelMetadata } from '@yamchart/schema';
 import type { CacheProvider, CachedQueryResult } from './cache.js';
+
+export interface ParameterOption {
+  value: string;
+  label: string;
+}
 
 export interface ChartQueryResult extends QueryResult {
   cached: boolean;
@@ -21,6 +28,8 @@ export class QueryService {
   private compiler: QueryCompiler;
   private connector: Connector;
   private cache: CacheProvider;
+  private models: Map<string, { metadata: ModelMetadata; sql: string }>;
+  private refs: Record<string, string>;
 
   constructor(config: QueryServiceConfig) {
     this.compiler = new QueryCompiler({
@@ -29,6 +38,8 @@ export class QueryService {
     });
     this.connector = config.connector;
     this.cache = config.cache;
+    this.models = new Map(Object.entries(config.models));
+    this.refs = config.refs;
   }
 
   async executeChart(
@@ -81,5 +92,29 @@ export class QueryService {
 
   getCacheStats() {
     return this.cache.getStats();
+  }
+
+  async executeParameterOptions(
+    modelName: string,
+    valueField: string,
+    labelField: string
+  ): Promise<ParameterOption[]> {
+    const model = this.models.get(modelName);
+    if (!model) {
+      throw new Error(`Unknown model: ${modelName}`);
+    }
+
+    // Render the template with refs (no params needed for options queries)
+    const context = createTemplateContext({}, this.refs);
+    const sql = renderTemplate(model.sql, context);
+
+    // Execute query
+    const result = await this.connector.execute(sql);
+
+    // Extract value and label from rows
+    return result.rows.map((row) => ({
+      value: String(row[valueField] ?? ''),
+      label: String(row[labelField] ?? row[valueField] ?? ''),
+    }));
   }
 }

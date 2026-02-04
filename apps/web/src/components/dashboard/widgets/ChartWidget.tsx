@@ -51,16 +51,17 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
         );
       }
       return (
-        <div className="h-full p-2">
-          <div className="text-sm font-medium text-gray-700 mb-2 px-2">
+        <div className="h-full p-2 flex flex-col">
+          <div className="text-sm font-medium text-gray-700 mb-2 px-2 flex-shrink-0">
             {chartConfig.title}
           </div>
-          <div className="h-[calc(100%-2rem)]">
+          <div className="flex-1 min-h-0">
             <LineChart
               data={chartData.rows}
               columns={chartData.columns}
               xAxis={chartConfig.chart.x}
               yAxis={chartConfig.chart.y}
+              height="100%"
               loading={isLoadingData}
             />
           </div>
