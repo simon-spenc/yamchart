@@ -26,7 +26,7 @@ layout:
           ref: revenue-trend
           cols: 6
         - type: text
-          content: |
+          content: |+
             ## Revenue Notes
 
             Revenue is calculated as **gross sales** minus refunds.
@@ -35,4 +35,8 @@ layout:
             - Excludes taxes
             - Includes shipping fees
             - Updated daily at midnight UTC
+
+            1. hello
+            2. {{orders-kpi}}
+
           cols: 6
