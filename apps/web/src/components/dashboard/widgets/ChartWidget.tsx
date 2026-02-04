@@ -1,6 +1,6 @@
 import { useChart, useChartData } from '../../../hooks';
 import { KpiWidget } from './KpiWidget';
-import { LineChart } from '../../charts';
+import { LineChart, BarChart, AreaChart, PieChart, ScatterChart } from '../../charts';
 
 interface ChartWidgetProps {
   chartRef: string;
@@ -59,6 +59,106 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
             <LineChart
               data={chartData.rows}
               columns={chartData.columns}
+              xAxis={chartConfig.chart.x}
+              yAxis={chartConfig.chart.y}
+              height="100%"
+              loading={isLoadingData}
+            />
+          </div>
+        </div>
+      );
+
+    case 'bar':
+      if (!chartConfig.chart.x || !chartConfig.chart.y) {
+        return (
+          <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+            Missing axis configuration
+          </div>
+        );
+      }
+      return (
+        <div className="h-full p-2 flex flex-col">
+          <div className="text-sm font-medium text-gray-700 mb-2 px-2 flex-shrink-0">
+            {chartConfig.title}
+          </div>
+          <div className="flex-1 min-h-0">
+            <BarChart
+              data={chartData.rows}
+              xAxis={chartConfig.chart.x}
+              yAxis={chartConfig.chart.y}
+              height="100%"
+              loading={isLoadingData}
+            />
+          </div>
+        </div>
+      );
+
+    case 'area':
+      if (!chartConfig.chart.x || !chartConfig.chart.y) {
+        return (
+          <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+            Missing axis configuration
+          </div>
+        );
+      }
+      return (
+        <div className="h-full p-2 flex flex-col">
+          <div className="text-sm font-medium text-gray-700 mb-2 px-2 flex-shrink-0">
+            {chartConfig.title}
+          </div>
+          <div className="flex-1 min-h-0">
+            <AreaChart
+              data={chartData.rows}
+              xAxis={chartConfig.chart.x}
+              yAxis={chartConfig.chart.y}
+              height="100%"
+              loading={isLoadingData}
+            />
+          </div>
+        </div>
+      );
+
+    case 'pie':
+      if (!chartConfig.chart.x || !chartConfig.chart.y) {
+        return (
+          <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+            Missing axis configuration
+          </div>
+        );
+      }
+      return (
+        <div className="h-full p-2 flex flex-col">
+          <div className="text-sm font-medium text-gray-700 mb-2 px-2 flex-shrink-0">
+            {chartConfig.title}
+          </div>
+          <div className="flex-1 min-h-0">
+            <PieChart
+              data={chartData.rows}
+              xAxis={chartConfig.chart.x}
+              yAxis={chartConfig.chart.y}
+              height="100%"
+              loading={isLoadingData}
+            />
+          </div>
+        </div>
+      );
+
+    case 'scatter':
+      if (!chartConfig.chart.x || !chartConfig.chart.y) {
+        return (
+          <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+            Missing axis configuration
+          </div>
+        );
+      }
+      return (
+        <div className="h-full p-2 flex flex-col">
+          <div className="text-sm font-medium text-gray-700 mb-2 px-2 flex-shrink-0">
+            {chartConfig.title}
+          </div>
+          <div className="flex-1 min-h-0">
+            <ScatterChart
+              data={chartData.rows}
               xAxis={chartConfig.chart.x}
               yAxis={chartConfig.chart.y}
               height="100%"
