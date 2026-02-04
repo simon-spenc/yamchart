@@ -2,6 +2,13 @@ name: customers-kpi
 title: Customers
 source:
   model: total_customers
+
+parameters:
+  - name: date_range
+    type: date_range
+    label: Date Range
+    default: last_30_days
+
 chart:
   type: kpi
   value:

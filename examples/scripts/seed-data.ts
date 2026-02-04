@@ -75,11 +75,12 @@ for (let i = 1; i <= 50; i++) {
   `);
 }
 
-// Seed orders (2 years of data)
+// Seed orders (2 years of data up to today)
 const statuses = ['pending', 'shipped', 'delivered', 'cancelled'];
 let orderId = 1;
-const startDate = new Date(2024, 0, 1);
-const endDate = new Date(2026, 0, 31);
+const today = new Date();
+const startDate = new Date(today.getFullYear() - 2, 0, 1); // 2 years ago, Jan 1
+const endDate = today; // Up to today
 
 for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
   // Random number of orders per day (5-20)

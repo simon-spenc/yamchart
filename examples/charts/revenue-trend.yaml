@@ -1,5 +1,5 @@
 name: revenue-trend
-title: Monthly Revenue
+title: Revenue Trend
 description: |
   Shows revenue trends over time.
   Primary metric for executive dashboard.
@@ -8,9 +8,18 @@ owner: analytics-team
 tags: [revenue, trend, executive]
 
 source:
-  model: monthly_revenue
+  model: revenue_by_period
 
 parameters:
+  - name: granularity
+    type: select
+    label: Group By
+    default: month
+    options:
+      - { value: day, label: Daily }
+      - { value: week, label: Weekly }
+      - { value: month, label: Monthly }
+      - { value: quarter, label: Quarterly }
   - name: date_range
     type: date_range
     label: Date Range

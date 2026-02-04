@@ -2,6 +2,13 @@ name: revenue-kpi
 title: Total Revenue
 source:
   model: total_revenue
+
+parameters:
+  - name: date_range
+    type: date_range
+    label: Date Range
+    default: last_30_days
+
 chart:
   type: kpi
   value:
