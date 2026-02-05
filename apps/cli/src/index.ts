@@ -147,4 +147,73 @@ program
     output.info(`Run \`cd ${directory === '.' ? basename(targetDir) : directory} && yamchart dev\` to start.`);
   });
 
+program
+  .command('sync-dbt')
+  .description('Sync dbt project metadata into AI-readable catalog')
+  .option('-s, --source <type>', 'Source type: local, github, dbt-cloud', 'local')
+  .option('-p, --path <dir>', 'Path to dbt project (for local source)')
+  .option('--repo <repo>', 'GitHub repository (for github source)')
+  .option('--branch <branch>', 'Git branch (for github source)', 'main')
+  .option('-i, --include <patterns...>', 'Include glob patterns')
+  .option('-e, --exclude <patterns...>', 'Exclude glob patterns')
+  .option('-t, --tag <tags...>', 'Filter by dbt tags')
+  .option('--refresh', 'Re-sync using saved configuration')
+  .action(async (options: {
+    source: 'local' | 'github' | 'dbt-cloud';
+    path?: string;
+    repo?: string;
+    branch?: string;
+    include?: string[];
+    exclude?: string[];
+    tag?: string[];
+    refresh?: boolean;
+  }) => {
+    const { syncDbt, loadSyncConfig } = await import('./commands/sync-dbt.js');
+
+    // Find project root
+    const projectDir = await findProjectRoot(process.cwd());
+
+    if (!projectDir) {
+      output.error('yamchart.yaml not found');
+      output.detail('Run this command from a yamchart project directory');
+      process.exit(2);
+    }
+
+    // Handle refresh mode
+    if (options.refresh) {
+      const savedConfig = await loadSyncConfig(projectDir);
+      if (!savedConfig) {
+        output.error('No saved sync config found');
+        output.detail('Run sync-dbt without --refresh first');
+        process.exit(1);
+      }
+      output.info(`Re-syncing from ${savedConfig.source}:${savedConfig.path || savedConfig.repo}`);
+    }
+
+    const spin = output.spinner('Syncing dbt metadata...');
+
+    const result = await syncDbt(projectDir, {
+      source: options.source,
+      path: options.path,
+      repo: options.repo,
+      branch: options.branch,
+      include: options.include || [],
+      exclude: options.exclude || [],
+      tags: options.tag || [],
+      refresh: options.refresh,
+    });
+
+    spin.stop();
+
+    if (!result.success) {
+      output.error(result.error || 'Sync failed');
+      process.exit(1);
+    }
+
+    output.success(`Synced ${result.modelsIncluded} models to .yamchart/catalog.md`);
+    if (result.modelsExcluded > 0) {
+      output.detail(`${result.modelsExcluded} models filtered out`);
+    }
+  });
+
 program.parse();
