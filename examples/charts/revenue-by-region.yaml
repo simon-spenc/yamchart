@@ -1,0 +1,28 @@
+name: revenue-by-region
+title: Revenue by Region
+description: Revenue breakdown by geographic region
+
+source:
+  model: revenue_by_region
+
+parameters:
+  - name: date_range
+    type: date_range
+    label: Date Range
+    default: last_12_months
+
+chart:
+  type: donut
+  x:
+    field: region
+    type: nominal
+    label: Region
+  y:
+    field: revenue
+    type: quantitative
+    format: "$,.0f"
+    label: Revenue
+  centerValue:
+    field: total
+    label: Total Revenue
+    format: "$"

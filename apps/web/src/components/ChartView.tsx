@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useChart, useChartData, useRefreshChart } from '../hooks';
 import { ChartContainer } from './ChartContainer';
 import { FilterBar } from './filters';
-import { LineChart, BarChart, AreaChart, PieChart } from './charts';
+import { LineChart, BarChart, AreaChart, PieChart, DonutChart } from './charts';
 import { useFilterStore } from '../stores/filterStore';
 import { clsx } from 'clsx';
 
@@ -291,6 +291,24 @@ export function ChartView({ chartName }: ChartViewProps) {
             data={chartData.rows}
             xAxis={chartDef.chart.x}
             yAxis={chartDef.chart.y}
+            loading={isLoadingData}
+          />
+        );
+
+      case 'donut':
+        if (!chartDef.chart.x || !chartDef.chart.y) {
+          return (
+            <div className="h-80 flex items-center justify-center text-gray-500">
+              Missing donut chart configuration
+            </div>
+          );
+        }
+        return (
+          <DonutChart
+            data={chartData.rows}
+            xAxis={chartDef.chart.x}
+            yAxis={chartDef.chart.y}
+            centerValue={chartDef.chart.centerValue}
             loading={isLoadingData}
           />
         );

@@ -50,7 +50,7 @@ export interface AxisConfig {
 }
 
 export interface ChartConfig {
-  type: 'line' | 'bar' | 'area' | 'scatter' | 'pie' | 'table' | 'metric' | 'kpi';
+  type: 'line' | 'bar' | 'area' | 'scatter' | 'pie' | 'donut' | 'table' | 'metric' | 'kpi';
   x?: AxisConfig;
   y?: AxisConfig;
   series?: Array<{
@@ -66,6 +66,12 @@ export interface ChartConfig {
     field: string;
     label?: string;
     type: 'percent_change' | 'absolute';
+  };
+  // Donut-specific fields
+  centerValue?: {
+    field?: string; // Field to display in center, or 'total' for sum
+    label?: string; // Label below the value
+    format?: string; // Format string ($, %, etc.)
   };
 }
 
@@ -94,10 +100,23 @@ export interface ProjectConfig {
   }>;
 }
 
+export interface ConnectionInfo {
+  name: string;
+  type: 'duckdb' | 'postgres' | 'snowflake';
+  // DuckDB specific
+  path?: string;
+  // Postgres specific
+  host?: string;
+  port?: number;
+  database?: string;
+  schema?: string;
+}
+
 export interface HealthResponse {
   status: 'ok' | 'error';
   version: string;
   project: string;
+  connection?: ConnectionInfo;
 }
 
 // Dashboard Types

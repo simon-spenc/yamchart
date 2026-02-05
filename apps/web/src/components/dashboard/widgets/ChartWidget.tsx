@@ -7,6 +7,7 @@ import {
   BarChart,
   AreaChart,
   PieChart,
+  DonutChart,
   ScatterChart,
   TableChart,
   MetricChart,
@@ -99,7 +100,7 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
     );
   }
 
-  const isEChartType = ['line', 'bar', 'area', 'pie', 'scatter'].includes(chartConfig.chart.type);
+  const isEChartType = ['line', 'bar', 'area', 'pie', 'donut', 'scatter'].includes(chartConfig.chart.type);
 
   const renderChart = () => {
     switch (chartConfig.chart.type) {
@@ -175,6 +176,26 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
             data={chartData.rows}
             xAxis={chartConfig.chart.x}
             yAxis={chartConfig.chart.y}
+            height="100%"
+            loading={isFetching}
+          />
+        );
+
+      case 'donut':
+        if (!chartConfig.chart.x || !chartConfig.chart.y) {
+          return (
+            <div className="h-full flex items-center justify-center text-gray-400 text-sm">
+              Missing axis configuration
+            </div>
+          );
+        }
+        return (
+          <DonutChart
+            ref={echartRef}
+            data={chartData.rows}
+            xAxis={chartConfig.chart.x}
+            yAxis={chartConfig.chart.y}
+            centerValue={chartConfig.chart.centerValue}
             height="100%"
             loading={isFetching}
           />

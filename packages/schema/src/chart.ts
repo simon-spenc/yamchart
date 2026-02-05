@@ -18,6 +18,7 @@ const ChartTypeSchema = z.enum([
   'area',
   'scatter',
   'pie',
+  'donut',
   'table',
   'metric',
   'map',
@@ -92,6 +93,13 @@ const KpiConfigSchema = z.object({
   comparison: KpiComparisonSchema.optional(),
 });
 
+// Center value for donut charts
+const CenterValueSchema = z.object({
+  field: z.string().optional(), // 'total' for sum, or specific field
+  label: z.string().optional(),
+  format: z.string().optional(),
+});
+
 // Standard chart config (existing)
 const StandardChartConfigSchema = z.object({
   type: ChartTypeSchema,
@@ -100,6 +108,7 @@ const StandardChartConfigSchema = z.object({
   series: z.array(SeriesSchema).optional(),
   annotations: z.array(AnnotationSchema).optional(),
   interactions: InteractionsSchema.optional(),
+  centerValue: CenterValueSchema.optional(), // For donut charts
 });
 
 // Chart visualization config - either standard or KPI
