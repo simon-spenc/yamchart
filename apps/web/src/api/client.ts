@@ -104,6 +104,16 @@ export const api = {
       body: JSON.stringify({ layout, message }),
     }),
 
+  // Warm up dashboard cache (pre-fetch all chart data)
+  warmDashboardCache: (
+    id: string,
+    params: Record<string, unknown> = {}
+  ): Promise<{ dashboard: string; charts: number; cached: number; fresh: number }> =>
+    fetchJson(`/dashboards/${encodeURIComponent(id)}/warm-cache`, {
+      method: 'POST',
+      body: JSON.stringify({ params }),
+    }),
+
   // Git operations
   getBranches: (): Promise<BranchesResponse> => fetchJson('/git/branches'),
 

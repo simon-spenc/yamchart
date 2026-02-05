@@ -4,12 +4,14 @@ import { join } from 'path';
 import { stringify as stringifyYaml } from 'yaml';
 import type { ConfigLoader } from '../services/config-loader.js';
 import type { GitService } from '../services/git-service.js';
+import type { QueryService } from '../services/query-service.js';
 import type { DashboardLayout } from '@yamchart/schema';
 
 export interface DashboardRoutesOptions {
   configLoader: ConfigLoader;
   gitService: GitService;
   projectDir: string;
+  queryService?: QueryService;
 }
 
 export async function dashboardRoutes(
@@ -79,6 +81,72 @@ export async function dashboardRoutes(
       success: true,
       commit: result.commit,
       branch: result.branch,
+    };
+  });
+
+  // Warm up cache for all charts in a dashboard
+  fastify.post<{
+    Params: { id: string };
+    Body: { params?: Record<string, unknown> };
+  }>('/api/dashboards/:id/warm-cache', async (request, reply) => {
+    const { id } = request.params;
+    const { params = {} } = request.body;
+
+    const dashboard = configLoader.getDashboardByName(id);
+    if (!dashboard) {
+      return reply.status(404).send({ error: `Dashboard not found: ${id}` });
+    }
+
+    if (!options.queryService) {
+      return reply.status(500).send({ error: 'Query service not available' });
+    }
+
+    // Extract all chart refs from dashboard layout
+    const chartRefs: string[] = [];
+    for (const row of dashboard.layout.rows) {
+      for (const widget of row.widgets) {
+        if (widget.type === 'chart' && widget.ref) {
+          chartRefs.push(widget.ref);
+        }
+      }
+    }
+
+    // Execute all charts in parallel to warm cache
+    const results = await Promise.all(
+      chartRefs.map(async (chartRef) => {
+        const chart = configLoader.getChartByName(chartRef);
+        if (!chart) {
+          return { chart: chartRef, error: 'Chart not found' };
+        }
+
+        try {
+          const result = await options.queryService!.executeChart(chart, params);
+          return {
+            chart: chartRef,
+            cached: result.cached,
+            durationMs: result.durationMs,
+            rowCount: result.rowCount,
+          };
+        } catch (err) {
+          return {
+            chart: chartRef,
+            error: err instanceof Error ? err.message : 'Query failed',
+          };
+        }
+      })
+    );
+
+    const cached = results.filter((r) => 'cached' in r && r.cached).length;
+    const fresh = results.filter((r) => 'cached' in r && !r.cached).length;
+    const failed = results.filter((r) => 'error' in r).length;
+
+    return {
+      dashboard: id,
+      charts: chartRefs.length,
+      cached,
+      fresh,
+      failed,
+      results,
     };
   });
 

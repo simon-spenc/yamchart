@@ -1,10 +1,12 @@
 import type { FastifyInstance } from 'fastify';
 import type { ConfigLoader } from '../services/config-loader.js';
+import type { QueryService } from '../services/query-service.js';
 import { testConnection } from '../services/connector-factory.js';
 
 export interface ConfigRoutesOptions {
   configLoader: ConfigLoader;
   projectDir: string;
+  queryService?: QueryService;
 }
 
 export async function configRoutes(
@@ -62,4 +64,33 @@ export async function configRoutes(
       return result;
     }
   );
+
+  // Get cache statistics
+  fastify.get('/api/cache/stats', async () => {
+    if (!options.queryService) {
+      return { error: 'Cache stats not available' };
+    }
+
+    const stats = options.queryService.getCacheStats();
+    const hitRate = stats.hits + stats.misses > 0
+      ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(1)
+      : '0.0';
+
+    return {
+      size: stats.size,
+      hits: stats.hits,
+      misses: stats.misses,
+      hitRate: `${hitRate}%`,
+    };
+  });
+
+  // Clear cache
+  fastify.post('/api/cache/clear', async () => {
+    if (!options.queryService) {
+      return { error: 'Cache not available' };
+    }
+
+    options.queryService.invalidateAll();
+    return { success: true, message: 'Cache cleared' };
+  });
 }

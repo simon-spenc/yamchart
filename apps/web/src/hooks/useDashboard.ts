@@ -34,9 +34,9 @@ export function useDashboard(id: string, branch?: string) {
     enabled: !!id,
   });
 
-  // Prefetch chart data when dashboard loads
+  // Warm server-side cache and prefetch client data when dashboard loads
   useEffect(() => {
-    if (query.data?.layout) {
+    if (query.data?.layout && query.data?.name) {
       const chartNames = extractChartNames(query.data.layout);
 
       // Remove null/undefined filters
@@ -44,7 +44,12 @@ export function useDashboard(id: string, branch?: string) {
         Object.entries(globalFilters).filter(([_, v]) => v != null)
       );
 
-      // Prefetch each chart's data with config
+      // Warm server-side cache first (this populates the server cache for all charts)
+      api.warmDashboardCache(query.data.name, cleanFilters).catch(() => {
+        // Ignore errors - this is just an optimization
+      });
+
+      // Prefetch each chart's data with config on client
       chartNames.forEach((chartName) => {
         queryClient.prefetchQuery({
           queryKey: ['chartWithData', chartName, cleanFilters],
@@ -53,7 +58,7 @@ export function useDashboard(id: string, branch?: string) {
         });
       });
     }
-  }, [query.data?.layout, globalFilters, queryClient]);
+  }, [query.data?.layout, query.data?.name, globalFilters, queryClient]);
 
   return query;
 }

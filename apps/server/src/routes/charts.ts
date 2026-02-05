@@ -52,6 +52,10 @@ export async function chartRoutes(
     try {
       const result = await queryService.executeChart(chart, params);
 
+      // Set cache headers
+      reply.header('X-Cache', result.cached ? 'HIT' : 'MISS');
+      reply.header('X-Query-Duration-Ms', result.durationMs.toFixed(0));
+
       const response: Record<string, unknown> = {
         columns: result.columns,
         rows: result.rows,
