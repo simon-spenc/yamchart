@@ -1,4 +1,5 @@
 import { useConfig, useHealth } from '../hooks';
+import { ConnectionStatus } from './ConnectionStatus';
 
 export function Header() {
   const { data: config } = useConfig();
@@ -18,19 +19,7 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Connection status */}
-            <div className="flex items-center gap-2">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  health?.status === 'ok' ? 'bg-green-500' : 'bg-red-500'
-                }`}
-              />
-              <span className="text-sm text-gray-600">
-                {health?.status === 'ok' ? 'Connected' : 'Disconnected'}
-              </span>
-            </div>
-
-            {/* Version */}
+            <ConnectionStatus status={health?.status} connection={health?.connection} />
             <span className="text-xs text-gray-400">v{health?.version}</span>
           </div>
         </div>

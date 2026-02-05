@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  dashbook:
+  yamchart:
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,10 +11,10 @@ services:
       - NODE_ENV=production
       - PORT=8080
       - HOST=0.0.0.0
-      - DASHBOOK_PROJECT_DIR=/app/examples
+      - YAMCHART_PROJECT_DIR=/app/examples
       - LOG_LEVEL=info
     volumes:
-      - dashbook_data:/data
+      - yamchart_data:/data
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
       interval: 30s
@@ -24,4 +24,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  dashbook_data:
+  yamchart_data:

@@ -2,6 +2,29 @@ import type { Chart, ModelMetadata } from '@yamchart/schema';
 import { renderTemplate, createTemplateContext, type ModelRefs } from './template.js';
 import { expandDatePreset, isDatePreset, isCustomDateRange, expandCustomDateRange } from './presets.js';
 import { createHash } from 'node:crypto';
+import { format } from 'date-fns';
+
+/**
+ * Resolve dynamic default values like current_date() to actual values
+ */
+function resolveDynamicDefault(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+
+  const trimmed = value.trim().toLowerCase();
+
+  // Handle current_date() and similar SQL date functions
+  if (trimmed === 'current_date()' || trimmed === 'current_date' || trimmed === 'now()') {
+    return format(new Date(), 'yyyy-MM-dd');
+  }
+
+  // Handle date arithmetic like current_date() - interval '1 month'
+  // For now, just return today's date for any current_date reference
+  if (trimmed.includes('current_date')) {
+    return format(new Date(), 'yyyy-MM-dd');
+  }
+
+  return value;
+}
 
 export interface CompiledQuery {
   sql: string;
@@ -77,20 +100,20 @@ export class QueryCompiler {
   ): Record<string, unknown> {
     const params: Record<string, unknown> = {};
 
-    // Apply model parameter defaults
+    // Apply model parameter defaults (resolve dynamic values like current_date())
     if (modelParams) {
       for (const param of modelParams) {
         if (param.default !== undefined) {
-          params[param.name] = param.default;
+          params[param.name] = resolveDynamicDefault(param.default);
         }
       }
     }
 
-    // Apply chart parameter defaults
+    // Apply chart parameter defaults (resolve dynamic values)
     if (chart.parameters) {
       for (const param of chart.parameters) {
         if (param.default !== undefined) {
-          params[param.name] = param.default;
+          params[param.name] = resolveDynamicDefault(param.default);
         }
       }
     }

@@ -1,0 +1,15 @@
+name: snowflake-example
+description: Snowflake data warehouse connection example
+type: snowflake
+
+config:
+  account: your-account.us-east-1
+  warehouse: COMPUTE_WH
+  database: ANALYTICS
+  schema: PUBLIC
+  role: ANALYST
+
+auth:
+  type: env
+  user_var: SNOWFLAKE_USER
+  password_var: SNOWFLAKE_PASSWORD

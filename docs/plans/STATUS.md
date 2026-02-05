@@ -19,6 +19,9 @@ Last updated: 2026-02-04
 | - | PostgreSQL Connector | ✅ Complete |
 | - | Connection Testing | ✅ Complete |
 | - | Export Features | ✅ Complete |
+| - | MySQL Connector | ✅ Complete |
+| - | SQLite Connector | ✅ Complete |
+| - | Snowflake Connector | ✅ Complete |
 | - | NPM Publishing | ✅ Complete |
 | - | Open Source Distribution | ✅ Complete |
 
@@ -149,6 +152,29 @@ Last updated: 2026-02-04
 - [x] PDF document export
 - [x] ChartActions dropdown menu with export options
 
+### MySQL Connector ✅
+
+- [x] MySQL connector class using `mysql2`
+- [x] Connection pooling
+- [x] SSL support
+- [x] Auth via environment variables (MYSQL_USER, MYSQL_PASSWORD)
+- [x] Type mapping for MySQL field types
+
+### SQLite Connector ✅
+
+- [x] SQLite connector class using `better-sqlite3`
+- [x] File and in-memory database support
+- [x] WAL mode for better performance
+- [x] Column type detection
+
+### Snowflake Connector ✅
+
+- [x] Snowflake connector class using `snowflake-sdk`
+- [x] Environment variable auth
+- [x] Key pair authentication support
+- [x] Warehouse, database, schema, role configuration
+- [x] Type mapping for Snowflake data types
+
 ### NPM Publishing ✅
 **Plan:** `2026-02-03-npm-publishing.md`
 
@@ -172,7 +198,7 @@ Last updated: 2026-02-04
 
 ### Potential Future Work
 
-1. **More Database Connectors** - MySQL, SQLite, BigQuery, Snowflake
+1. **More Database Connectors** - BigQuery, ClickHouse
 
 2. **More Chart Types** - Heatmap, gauge, funnel, sankey, treemap
 

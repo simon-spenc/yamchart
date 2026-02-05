@@ -61,6 +61,19 @@ const SnowflakeConfigSchema = z.object({
   role: z.string().optional(),
 });
 
+// MySQL-specific config
+const MySQLConfigSchema = z.object({
+  host: z.string(),
+  port: z.number().int().positive().default(3306),
+  database: z.string(),
+  ssl: z.boolean().optional(),
+});
+
+// SQLite-specific config
+const SQLiteConfigSchema = z.object({
+  path: z.string(), // file path or :memory:
+});
+
 // Base connection schema
 const BaseConnectionSchema = z.object({
   name: z.string().min(1),
@@ -88,14 +101,30 @@ const SnowflakeConnectionSchema = BaseConnectionSchema.extend({
   auth: AuthSchema,
 });
 
+const MySQLConnectionSchema = BaseConnectionSchema.extend({
+  type: z.literal('mysql'),
+  config: MySQLConfigSchema,
+  auth: AuthSchema.optional(),
+});
+
+const SQLiteConnectionSchema = BaseConnectionSchema.extend({
+  type: z.literal('sqlite'),
+  config: SQLiteConfigSchema,
+  auth: z.undefined().optional(),
+});
+
 // Union of all connection types
 export const ConnectionSchema = z.discriminatedUnion('type', [
   DuckDBConnectionSchema,
   PostgresConnectionSchema,
   SnowflakeConnectionSchema,
+  MySQLConnectionSchema,
+  SQLiteConnectionSchema,
 ]);
 
 export type Connection = z.infer<typeof ConnectionSchema>;
 export type DuckDBConnection = z.infer<typeof DuckDBConnectionSchema>;
 export type PostgresConnection = z.infer<typeof PostgresConnectionSchema>;
 export type SnowflakeConnection = z.infer<typeof SnowflakeConnectionSchema>;
+export type MySQLConnection = z.infer<typeof MySQLConnectionSchema>;
+export type SQLiteConnection = z.infer<typeof SQLiteConnectionSchema>;

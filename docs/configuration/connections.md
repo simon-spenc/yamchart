@@ -99,6 +99,101 @@ PostgreSQL connections use pooling by default:
 - Pool size: 10 connections
 - Idle timeout: 30 seconds
 
+## MySQL
+
+Connect to MySQL and compatible databases (MariaDB, PlanetScale, etc.).
+
+```yaml
+name: mysql-db
+type: mysql
+
+config:
+  host: db.example.com
+  port: 3306
+  database: analytics
+  ssl: true
+
+auth:
+  type: env
+  user_var: MYSQL_USER
+  password_var: MYSQL_PASSWORD
+```
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `host` | Yes | - | Database hostname |
+| `port` | No | `3306` | Database port |
+| `database` | Yes | - | Database name |
+| `ssl` | No | `false` | Enable SSL/TLS |
+
+Without an `auth` block, uses `MYSQL_USER` and `MYSQL_PASSWORD` environment variables.
+
+## SQLite
+
+Lightweight file-based database, great for local development and small datasets.
+
+```yaml
+name: local-sqlite
+type: sqlite
+
+config:
+  path: ./data/analytics.db
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `path` | Yes | Path to SQLite file (relative to project root), or `:memory:` |
+
+### In-Memory SQLite
+
+```yaml
+name: memory
+type: sqlite
+
+config:
+  path: :memory:
+```
+
+## Snowflake
+
+Connect to Snowflake data warehouse.
+
+```yaml
+name: snowflake-warehouse
+type: snowflake
+
+config:
+  account: your-account.us-east-1
+  warehouse: COMPUTE_WH
+  database: ANALYTICS
+  schema: PUBLIC
+  role: ANALYST
+
+auth:
+  type: env
+  user_var: SNOWFLAKE_USER
+  password_var: SNOWFLAKE_PASSWORD
+```
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `account` | Yes | - | Snowflake account identifier |
+| `warehouse` | Yes | - | Compute warehouse name |
+| `database` | Yes | - | Database name |
+| `schema` | No | `PUBLIC` | Default schema |
+| `role` | No | - | Role to use |
+
+### Key Pair Authentication
+
+For service accounts, use key pair authentication:
+
+```yaml
+auth:
+  type: key_pair
+  user_var: SNOWFLAKE_USER
+  private_key_path: /path/to/rsa_key.p8
+```
+
 ## Setting Default Connection
 
 In `yamchart.yaml`, set the default connection:
@@ -154,14 +249,16 @@ user: ${STAGING_DB_USER}
 password: ${STAGING_DB_PASSWORD}
 ```
 
-## Planned Connectors
+## Supported Connectors
 
 | Database | Status |
 |----------|--------|
+| DuckDB | ✅ Supported |
+| PostgreSQL | ✅ Supported |
+| MySQL | ✅ Supported |
+| SQLite | ✅ Supported |
+| Snowflake | ✅ Supported |
 | BigQuery | Planned |
-| Snowflake | Planned |
-| MySQL | Planned |
-| SQLite | Planned |
 | ClickHouse | Planned |
 
 ## Security Best Practices

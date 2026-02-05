@@ -1,0 +1,6 @@
+name: sqlite-example
+description: SQLite database connection example
+type: sqlite
+
+config:
+  path: ./analytics.db  # or :memory: for in-memory database

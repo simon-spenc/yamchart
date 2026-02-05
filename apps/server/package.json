@@ -30,7 +30,7 @@
   },
   "scripts": {
     "build": "tsc && cp -r ../web/dist dist/public",
-    "dev": "tsx watch src/index.ts",
+    "dev": "YAMCHART_PROJECT_DIR=../../examples tsx watch src/index.ts",
     "start": "node dist/index.js",
     "start:prod": "NODE_ENV=production node dist/index.js",
     "test": "vitest run",

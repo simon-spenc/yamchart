@@ -36,16 +36,21 @@
   },
   "dependencies": {
     "@yamchart/schema": "workspace:*",
-    "nunjucks": "^3.2.4",
+    "better-sqlite3": "^12.6.2",
     "date-fns": "^4.1.0",
     "duckdb": "^1.1.0",
-    "pg": "^8.13.0"
+    "mysql2": "^3.16.3",
+    "nunjucks": "^3.2.4",
+    "pg": "^8.13.0",
+    "snowflake-sdk": "^2.3.3"
   },
   "devDependencies": {
-    "@yamchart/config": "workspace:*",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.0.0",
     "@types/nunjucks": "^3.2.6",
     "@types/pg": "^8.11.0",
+    "@types/snowflake-sdk": "^1.6.24",
+    "@yamchart/config": "workspace:*",
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
   },

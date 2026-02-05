@@ -1,5 +1,22 @@
-import { DuckDBConnector, PostgresConnector, resolvePostgresAuth, type Connector } from '@yamchart/query';
-import type { Connection, DuckDBConnection, PostgresConnection } from '@yamchart/schema';
+import {
+  DuckDBConnector,
+  PostgresConnector,
+  MySQLConnector,
+  SQLiteConnector,
+  SnowflakeConnector,
+  resolvePostgresAuth,
+  resolveMySQLAuth,
+  resolveSnowflakeAuth,
+  type Connector,
+} from '@yamchart/query';
+import type {
+  Connection,
+  DuckDBConnection,
+  PostgresConnection,
+  MySQLConnection,
+  SQLiteConnection,
+  SnowflakeConnection,
+} from '@yamchart/schema';
 import { join } from 'path';
 
 export interface ConnectorFactoryOptions {
@@ -45,8 +62,51 @@ export function createConnectorFromConfig(
       });
     }
 
-    case 'snowflake':
-      throw new Error('Snowflake connector not yet implemented');
+    case 'mysql': {
+      const mysqlConnection = connection as MySQLConnection;
+      const credentials = resolveMySQLAuth(mysqlConnection);
+
+      return new MySQLConnector({
+        host: mysqlConnection.config.host,
+        port: mysqlConnection.config.port,
+        database: mysqlConnection.config.database,
+        ssl: mysqlConnection.config.ssl,
+        user: credentials.user,
+        password: credentials.password,
+        min: mysqlConnection.pool?.min_connections,
+        max: mysqlConnection.pool?.max_connections,
+        idleTimeoutMillis: mysqlConnection.pool?.idle_timeout,
+        statementTimeout: mysqlConnection.query?.timeout,
+      });
+    }
+
+    case 'sqlite': {
+      const sqliteConnection = connection as SQLiteConnection;
+      // Resolve path relative to project directory
+      const dbPath = sqliteConnection.config.path.startsWith('/')
+        ? sqliteConnection.config.path
+        : sqliteConnection.config.path === ':memory:'
+          ? ':memory:'
+          : join(projectDir, sqliteConnection.config.path);
+      return new SQLiteConnector({ path: dbPath });
+    }
+
+    case 'snowflake': {
+      const sfConnection = connection as SnowflakeConnection;
+      const credentials = resolveSnowflakeAuth(sfConnection);
+
+      return new SnowflakeConnector({
+        account: sfConnection.config.account,
+        username: credentials.username,
+        password: credentials.password,
+        privateKey: credentials.privateKey,
+        warehouse: sfConnection.config.warehouse,
+        database: sfConnection.config.database,
+        schema: sfConnection.config.schema,
+        role: sfConnection.config.role,
+        statementTimeout: sfConnection.query?.timeout,
+      });
+    }
 
     default:
       throw new Error(`Unsupported connection type: ${(connection as Connection).type}`);

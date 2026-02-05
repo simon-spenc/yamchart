@@ -18,4 +18,7 @@ export interface Connector {
 
 export * from './duckdb.js';
 export * from './postgres.js';
+export * from './mysql.js';
+export * from './sqlite.js';
+export * from './snowflake.js';
 export * from './auth.js';

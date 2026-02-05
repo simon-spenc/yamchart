@@ -184,10 +184,21 @@ export class ConfigLoader {
   startWatching(): void {
     if (this.watcher) return;
 
-    this.watcher = watch(this.projectDir, {
+    // Only watch specific config files, not the entire directory
+    // This prevents EMFILE errors from watching node_modules
+    const watchPaths = [
+      join(this.projectDir, 'yamchart.yaml'),
+      join(this.projectDir, 'connections'),
+      join(this.projectDir, 'charts'),
+      join(this.projectDir, 'models'),
+      join(this.projectDir, 'dashboards'),
+    ];
+
+    this.watcher = watch(watchPaths, {
       ignored: /(^|[\/\\])\../, // Ignore dotfiles
       persistent: true,
       ignoreInitial: true,
+      depth: 1, // Only watch one level deep in subdirectories
     });
 
     this.watcher.on('change', async (path) => {

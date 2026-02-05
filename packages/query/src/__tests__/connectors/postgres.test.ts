@@ -31,9 +31,17 @@ describe.skipIf(SKIP_POSTGRES)('PostgresConnector', () => {
     expect(result.durationMs).toBeGreaterThan(0);
   });
 
-  it('handles BigInt conversion', async () => {
+  it('handles BigInt conversion - safe integers become numbers', async () => {
+    const result = await connector.execute('SELECT 12345::bigint as safe_big');
+    expect(typeof result.rows[0]!.safe_big).toBe('number');
+    expect(result.rows[0]!.safe_big).toBe(12345);
+  });
+
+  it('handles BigInt conversion - large values become strings for precision', async () => {
     const result = await connector.execute('SELECT 9223372036854775807::bigint as big');
-    expect(typeof result.rows[0]!.big).toBe('number');
+    // Values exceeding Number.MAX_SAFE_INTEGER are returned as strings
+    expect(typeof result.rows[0]!.big).toBe('string');
+    expect(result.rows[0]!.big).toBe('9223372036854775807');
   });
 
   it('validates queries with explain', async () => {

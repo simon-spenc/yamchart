@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { useConfig, useDashboards, useHealth } from '../../hooks';
+import { ConnectionStatus } from '../ConnectionStatus';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -38,16 +39,7 @@ export function AppLayout({ children, currentPath, onNavigate }: AppLayoutProps)
             )}
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  health?.status === 'ok' ? 'bg-green-500' : 'bg-red-500'
-                }`}
-              />
-              <span className="text-sm text-gray-600">
-                {health?.status === 'ok' ? 'Connected' : 'Disconnected'}
-              </span>
-            </div>
+            <ConnectionStatus status={health?.status} connection={health?.connection} />
             <span className="text-xs text-gray-400">v{health?.version}</span>
           </div>
         </header>

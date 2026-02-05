@@ -1,6 +1,13 @@
-import { Pool, type PoolConfig, type QueryResult as PgQueryResult } from 'pg';
+import { Pool, types, type PoolConfig, type PoolClient, type QueryResult as PgQueryResult } from 'pg';
 import { performance } from 'node:perf_hooks';
 import type { Connector, QueryResult } from './index.js';
+
+// Configure pg to return int8 (bigint) as JavaScript BigInt instead of string
+// OID 20 = int8 in PostgreSQL
+types.setTypeParser(20, (val: string) => {
+  if (val === null) return null;
+  return BigInt(val);
+});
 
 export interface PostgresConfig {
   host: string;
@@ -14,8 +21,18 @@ export interface PostgresConfig {
   min?: number;
   max?: number;
   idleTimeoutMillis?: number;
+  connectTimeoutMillis?: number;
   // Query settings
   statementTimeout?: number;
+}
+
+// Safe identifier escaping for schema names
+function escapeIdentifier(identifier: string): string {
+  // Only allow alphanumeric and underscores for safety
+  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(identifier)) {
+    throw new Error(`Invalid identifier: ${identifier}`);
+  }
+  return `"${identifier}"`;
 }
 
 export class PostgresConnector implements Connector {
@@ -37,18 +54,33 @@ export class PostgresConnector implements Connector {
       min: this.config.min ?? 2,
       max: this.config.max ?? 10,
       idleTimeoutMillis: this.config.idleTimeoutMillis ?? 30000,
+      connectionTimeoutMillis: this.config.connectTimeoutMillis ?? 10000,
     };
+
+    // Add statement timeout if configured
+    if (this.config.statementTimeout) {
+      poolConfig.statement_timeout = this.config.statementTimeout;
+    }
 
     this.pool = new Pool(poolConfig);
 
-    // Verify connection works
-    const client = await this.pool.connect();
+    // Handle pool errors (idle client errors)
+    this.pool.on('error', (err) => {
+      console.error('Unexpected postgres pool error:', err.message);
+    });
 
-    // Set search_path if schema specified
+    // Set search_path on each new client from the pool
     if (this.config.schema) {
-      await client.query(`SET search_path TO ${this.config.schema}`);
+      const schema = escapeIdentifier(this.config.schema);
+      this.pool.on('connect', (client: PoolClient) => {
+        client.query(`SET search_path TO ${schema}`).catch((err) => {
+          console.error('Failed to set search_path:', err.message);
+        });
+      });
     }
 
+    // Verify connection works
+    const client = await this.pool.connect();
     client.release();
   }
 
@@ -137,6 +169,10 @@ export class PostgresConnector implements Connector {
       return null;
     }
     if (typeof value === 'bigint') {
+      // Return as string if value exceeds safe integer range to preserve precision
+      if (value > Number.MAX_SAFE_INTEGER || value < Number.MIN_SAFE_INTEGER) {
+        return value.toString();
+      }
       return Number(value);
     }
     if (value instanceof Date) {

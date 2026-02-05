@@ -1,7 +1,7 @@
-# Fly.io configuration for Dashbook
+# Fly.io configuration for Yamchart
 # https://fly.io/docs/reference/configuration/
 
-app = "dashbook"
+app = "yamchart"
 primary_region = "sjc"
 
 [build]
@@ -11,7 +11,7 @@ primary_region = "sjc"
   NODE_ENV = "production"
   PORT = "8080"
   HOST = "0.0.0.0"
-  DASHBOOK_PROJECT_DIR = "/app/examples"
+  YAMCHART_PROJECT_DIR = "/app/examples"
   LOG_LEVEL = "info"
 
 [http_service]
@@ -41,5 +41,5 @@ primary_region = "sjc"
 
 # Volume for persistent DuckDB storage
 [[mounts]]
-  source = "dashbook_data"
+  source = "yamchart_data"
   destination = "/data"

@@ -15,7 +15,7 @@ export function DashboardFilters({ filters }: DashboardFiltersProps) {
               key={filterName}
               name={filterName}
               label="Date Range"
-              defaultValue="last_30_days"
+              defaultValue="month_to_date"
             />
           );
         }

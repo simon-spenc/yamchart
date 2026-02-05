@@ -1,0 +1,13 @@
+name: mysql-example
+description: MySQL database connection example
+type: mysql
+
+config:
+  host: localhost
+  port: 3306
+  database: analytics
+
+auth:
+  type: env
+  user_var: MYSQL_USER
+  password_var: MYSQL_PASSWORD
