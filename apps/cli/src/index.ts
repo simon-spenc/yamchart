@@ -216,4 +216,36 @@ program
     }
   });
 
+program
+  .command('generate')
+  .description('Generate SQL model stubs from dbt catalog')
+  .argument('[model]', 'Specific model to generate (optional)')
+  .option('--yolo', 'Skip all prompts, use defaults for everything')
+  .action(async (model: string | undefined, options: { yolo?: boolean }) => {
+    const { generate } = await import('./commands/generate.js');
+
+    const projectDir = await findProjectRoot(process.cwd());
+
+    if (!projectDir) {
+      output.error('yamchart.yaml not found');
+      output.detail('Run this command from a yamchart project directory');
+      process.exit(2);
+    }
+
+    const result = await generate(projectDir, {
+      model,
+      yolo: options.yolo,
+    });
+
+    if (!result.success) {
+      output.error(result.error || 'Generate failed');
+      process.exit(1);
+    }
+
+    output.success(`Generated ${result.filesCreated} model stubs`);
+    if (result.filesSkipped > 0) {
+      output.detail(`${result.filesSkipped} files skipped`);
+    }
+  });
+
 program.parse();
