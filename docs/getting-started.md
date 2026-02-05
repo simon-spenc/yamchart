@@ -202,49 +202,28 @@ The Jinja templating lets you conditionally include filters.
 
 ## Chart Types
 
-Yamchart supports these chart types:
-
 | Type | Use Case |
 |------|----------|
 | `line` | Trends over time |
 | `bar` | Comparing categories |
 | `area` | Volume over time |
 | `pie` | Part-to-whole relationships |
+| `donut` | Part-to-whole with center metric |
+| `kpi` | Single metric with comparison |
 
-### Line Chart
+### Line/Bar/Area Charts
 
 ```yaml
 chart:
-  type: line
+  type: line  # or bar, area
   x:
     field: date
     type: temporal
+    label: Date
   y:
-    field: value
-```
-
-### Bar Chart
-
-```yaml
-chart:
-  type: bar
-  x:
-    field: category
-    type: ordinal
-  y:
-    field: value
-```
-
-### Area Chart
-
-```yaml
-chart:
-  type: area
-  x:
-    field: date
-    type: temporal
-  y:
-    field: value
+    field: revenue
+    format: "$,.0f"
+    label: Revenue
 ```
 
 ### Pie Chart
@@ -252,11 +231,145 @@ chart:
 ```yaml
 chart:
   type: pie
-  value:
+  x:
+    field: category
+    type: nominal
+  y:
     field: amount
-  category:
-    field: segment
+    format: "$,.0f"
 ```
+
+### Donut Chart
+
+Donut charts display a metric in the center:
+
+```yaml
+chart:
+  type: donut
+  x:
+    field: region
+    type: nominal
+  y:
+    field: revenue
+    format: "$,.0f"
+  centerValue:
+    field: total    # 'total' sums all values
+    label: Total Revenue
+    format: "$"
+```
+
+### KPI Chart
+
+Single metric with period-over-period comparison:
+
+```yaml
+chart:
+  type: kpi
+  value:
+    field: value
+  format:
+    type: currency
+    currency: USD
+  comparison:
+    enabled: true
+    field: previous_value
+    label: vs previous period
+    type: percent_change  # or 'absolute'
+```
+
+## Granularity Selector
+
+Add a granularity parameter to let users switch between daily/weekly/monthly/quarterly views:
+
+```yaml
+parameters:
+  - name: granularity
+    type: select
+    label: Group By
+    default: month
+    options:
+      - { value: day, label: Daily }
+      - { value: week, label: Weekly }
+      - { value: month, label: Monthly }
+      - { value: quarter, label: Quarterly }
+  - name: date_range
+    type: date_range
+    default: last_12_months
+```
+
+Then use it in your SQL model:
+
+```sql
+SELECT
+  date_trunc('{{ granularity }}', order_date) AS period,
+  SUM(amount) AS revenue
+FROM orders
+WHERE order_date BETWEEN '{{ start_date }}' AND '{{ end_date }}'
+GROUP BY 1
+ORDER BY 1
+```
+
+The x-axis labels automatically format based on granularity (e.g., "Q1 '25" for quarters).
+
+## Dashboards
+
+Create dashboard layouts that combine multiple charts and text widgets.
+
+### Create a Dashboard
+
+Create `dashboards/overview.yaml`:
+
+```yaml
+name: overview
+title: Executive Overview
+description: Key business metrics
+
+filters:
+  - date_range
+
+layout:
+  gap: 16
+  rows:
+    - height: 200
+      widgets:
+        - type: chart
+          ref: revenue-kpi
+          cols: 3
+        - type: chart
+          ref: orders-kpi
+          cols: 3
+    - height: 400
+      widgets:
+        - type: chart
+          ref: revenue-trend
+          cols: 8
+        - type: text
+          cols: 4
+          content: |
+            ## Summary
+            Total revenue: {{revenue-kpi}}
+            Orders: {{orders-kpi}}
+```
+
+### KPI References in Text
+
+Embed live KPI values in markdown using `{{chartName}}` syntax:
+
+| Syntax | Description |
+|--------|-------------|
+| `{{chart}}` | Current value from chart |
+| `{{chart.field}}` | Specific field from chart data |
+| `{{chart@preset}}` | Value with specific date preset |
+| `{{chart@2025-01-01..2025-12-31}}` | Value for custom date range |
+
+Example:
+```markdown
+Revenue is **{{revenue-kpi}}** ({{revenue-kpi@previous_year}} last year).
+```
+
+### Filter Overrides
+
+On dashboards, hover over a chart and click the filter icon to set chart-specific filters that override the dashboard's global filters. Click "Reset to dashboard" to sync back.
 
 ## Deploy with Docker
 
@@ -345,9 +458,10 @@ defaults:
 
 ## Next Steps
 
-- Explore the [Chart Configuration Reference](./configuration/charts.md)
-- Learn about [SQL Model Templating](./configuration/models.md)
-- Set up [Production Deployment](./deployment/docker.md)
+- [Chart Configuration Reference](./configuration/charts.md) - All chart types and options
+- [Dashboard Configuration](./configuration/dashboards.md) - Layout, widgets, KPI references
+- [SQL Models Reference](./configuration/models.md) - Jinja templating, parameters
+- [Connections Reference](./configuration/connections.md) - Database configuration
 
 ## Getting Help
 

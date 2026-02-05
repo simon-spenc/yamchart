@@ -77,10 +77,60 @@ Best for part-to-whole relationships.
 ```yaml
 chart:
   type: pie
-  value:
+  x:
+    field: segment        # Category/label field
+    type: nominal
+  y:
     field: amount         # Numeric field for slice size
-  category:
-    field: segment        # Field for slice labels
+    format: "$,.0f"
+```
+
+### Donut Chart
+
+Pie chart with a center value display.
+
+```yaml
+chart:
+  type: donut
+  x:
+    field: region
+    type: nominal
+  y:
+    field: revenue
+    format: "$,.0f"
+  centerValue:
+    field: total          # 'total' sums all values, or use specific field
+    label: Total Revenue  # Label below the value
+    format: "$"           # Format for center value
+```
+
+### KPI Chart
+
+Single metric with optional period comparison.
+
+```yaml
+chart:
+  type: kpi
+  value:
+    field: value          # Field containing the metric
+  format:
+    type: currency        # number, currency, or percent
+    currency: USD         # For currency type
+    decimals: 0           # Decimal places
+  comparison:
+    enabled: true
+    field: previous_value # Field with comparison value
+    label: vs last period # Comparison label
+    type: percent_change  # percent_change or absolute
+```
+
+The SQL model should return both current and previous values:
+
+```sql
+SELECT
+  current_value as value,
+  previous_value as previous_value
+FROM metrics
 ```
 
 ## Axis Types
@@ -158,6 +208,35 @@ parameters:
       - Electronics
       - Clothing
 ```
+
+### Granularity Select
+
+Let users switch between time aggregations:
+
+```yaml
+parameters:
+  - name: granularity
+    type: select
+    label: Group By
+    default: month
+    options:
+      - { value: day, label: Daily }
+      - { value: week, label: Weekly }
+      - { value: month, label: Monthly }
+      - { value: quarter, label: Quarterly }
+```
+
+Use in SQL with `date_trunc`:
+
+```sql
+SELECT
+  date_trunc('{{ granularity }}', order_date) AS period,
+  SUM(amount) AS revenue
+FROM orders
+GROUP BY 1
+```
+
+The chart automatically formats x-axis labels based on granularity (e.g., "Q1 '25" for quarters).
 
 ### Dynamic Select
 
