@@ -1,8 +1,10 @@
 import type { FastifyInstance } from 'fastify';
 import type { ConfigLoader } from '../services/config-loader.js';
+import { testConnection } from '../services/connector-factory.js';
 
 export interface ConfigRoutesOptions {
   configLoader: ConfigLoader;
+  projectDir: string;
 }
 
 export async function configRoutes(
@@ -36,7 +38,16 @@ export async function configRoutes(
     };
   });
 
-  // Get connection status
+  // Get all connections status
+  fastify.get('/api/connections/status', async () => {
+    const connections = configLoader.getConnections();
+    const results = await Promise.all(
+      connections.map((conn) => testConnection(conn, { projectDir: options.projectDir }))
+    );
+    return { connections: results };
+  });
+
+  // Get single connection status
   fastify.get<{ Params: { name: string } }>(
     '/api/connections/:name/status',
     async (request, reply) => {
@@ -47,13 +58,8 @@ export async function configRoutes(
         return reply.status(404).send({ error: `Connection not found: ${name}` });
       }
 
-      // TODO: Actually test connection
-      return {
-        name: connection.name,
-        type: connection.type,
-        status: 'healthy',
-        latencyMs: 0,
-      };
+      const result = await testConnection(connection, { projectDir: options.projectDir });
+      return result;
     }
   );
 }

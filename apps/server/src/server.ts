@@ -183,13 +183,13 @@ export async function createServer(options: ServerOptions): Promise<DashbookServ
       protectedRoutes.addHook('preHandler', authMiddleware);
       protectedRoutes.addHook('preHandler', orgMiddleware);
 
-      await protectedRoutes.register(configRoutes, { configLoader });
+      await protectedRoutes.register(configRoutes, { configLoader, projectDir });
       await protectedRoutes.register(chartRoutes, { configLoader, queryService });
       await protectedRoutes.register(dashboardRoutes, { configLoader, gitService, projectDir });
     });
   } else {
     // Public routes - no auth required (development/local mode)
-    await fastify.register(configRoutes, { configLoader });
+    await fastify.register(configRoutes, { configLoader, projectDir });
     await fastify.register(chartRoutes, { configLoader, queryService });
     await fastify.register(dashboardRoutes, { configLoader, gitService, projectDir });
   }
