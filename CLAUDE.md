@@ -45,6 +45,12 @@ pnpm --filter @yamchart/web dev       # Web only (port 5173)
 pnpm --filter @yamchart/server test   # Run server tests
 ```
 
+**dbt sync:**
+```bash
+yamchart sync-dbt --path ../dbt-project  # Sync dbt metadata
+yamchart sync-dbt --refresh              # Re-sync with saved config
+```
+
 ## Technology Stack
 
 - **API:** Fastify
