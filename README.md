@@ -36,6 +36,7 @@ chart:
 - **Git-native** - Dashboards are code. Review in PRs, version in Git, deploy via CI/CD.
 - **No vendor lock-in** - Your analytics live in your repo, not a SaaS database.
 - **AI-friendly** - YAML schema designed for LLM generation and modification.
+- **dbt integration** - Sync your dbt project metadata for AI-assisted chart creation.
 - **Self-hostable** - Deploy anywhere with Docker. Put it behind your firewall.
 
 ## Quick Start
@@ -53,10 +54,30 @@ npx yamchart dev
 
 See the [Getting Started Guide](./docs/getting-started.md) for a full tutorial.
 
+## dbt Integration
+
+If you have an existing dbt project, sync your model metadata to help AI tools write better SQL:
+
+```bash
+# Sync dbt metadata from your project
+npx yamchart sync-dbt --path ../my-dbt-project
+
+# Filter to specific models
+npx yamchart sync-dbt --path ../my-dbt-project --include "**/marts/**"
+
+# Re-sync with saved configuration
+npx yamchart sync-dbt --refresh
+```
+
+This creates `.yamchart/catalog.md` - a human and AI-readable catalog of your dbt models, columns, and relationships. When using Claude Code, Cursor, or other AI tools, they'll understand your data schema.
+
+See [dbt Sync Configuration](./docs/configuration/dbt-sync.md) for details.
+
 ## Documentation
 
 - [Getting Started](./docs/getting-started.md) - Full tutorial from zero to deployed dashboard
 - [Chart Configuration](./docs/configuration/charts.md) - Chart types, parameters, and formatting
+- [dbt Sync](./docs/configuration/dbt-sync.md) - Sync dbt project metadata for AI assistance
 
 ## Project Structure
 
@@ -126,8 +147,10 @@ chart:
 |----------|--------|
 | DuckDB | Supported |
 | PostgreSQL | Supported |
+| Snowflake | Supported |
+| MySQL | Supported |
+| SQLite | Supported |
 | BigQuery | Planned |
-| Snowflake | Planned |
 
 ## Development
 

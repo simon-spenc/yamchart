@@ -456,12 +456,26 @@ defaults:
   connection: warehouse
 ```
 
+## Working with dbt Projects
+
+If you have an existing dbt project, yamchart can sync your model metadata to help AI tools understand your schema:
+
+```bash
+# Sync dbt metadata
+yamchart sync-dbt --path ../my-dbt-project
+```
+
+This creates `.yamchart/catalog.md` with your table names, column descriptions, and relationships. AI tools like Claude Code and Cursor can read this to generate accurate SQL for your charts.
+
+See [dbt Sync Configuration](./configuration/dbt-sync.md) for filtering options and advanced usage.
+
 ## Next Steps
 
 - [Chart Configuration Reference](./configuration/charts.md) - All chart types and options
 - [Dashboard Configuration](./configuration/dashboards.md) - Layout, widgets, KPI references
 - [SQL Models Reference](./configuration/models.md) - Jinja templating, parameters
 - [Connections Reference](./configuration/connections.md) - Database configuration
+- [dbt Sync](./configuration/dbt-sync.md) - Sync dbt metadata for AI assistance
 
 ## Getting Help
 
