@@ -104,7 +104,31 @@ Optional (for auth/billing features):
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY` - Supabase authentication
 - `STRIPE_SECRET_KEY` - Billing integration
 
-## Design Documents
+## Documentation
 
+**Reference docs (in `docs/configuration/`):**
+- `charts.md` - Chart types, parameters, granularity, formatting
+- `dashboards.md` - Layout, widgets, KPI references, filter overrides
+- `models.md` - SQL with Jinja templating, date patterns
+- `connections.md` - DuckDB/PostgreSQL configuration
+
+**Design documents:**
 - `docs/plans/2026-01-31-mvp-architecture-design.md` - Full MVP architecture design
 - `Yamchart Technical Spec.md` - Complete product specification
+
+## Frontend Patterns
+
+**ECharts configuration:** Charts use ECharts with consistent patterns:
+- Grid margins: `{ left: '3%', right: '4%', bottom: '10%', containLabel: true }`
+- Y-axis nameGap: 80 for proper label spacing
+- Granularity-based date formatting with quarter format (`Q1 '25`)
+
+**Filter state:** Zustand store (`useFilterStore`) manages:
+- Global filters applied to all charts
+- Per-chart filter overrides on dashboards
+- Granularity selection for time series
+
+**Chart components:** Located in `apps/web/src/components/charts/`:
+- `LineChart.tsx`, `BarChart.tsx`, `AreaChart.tsx` - Time series with granularity
+- `PieChart.tsx`, `DonutChart.tsx` - Part-to-whole (donut uses series label for center)
+- `KPIChart.tsx` - Single metric with comparison
