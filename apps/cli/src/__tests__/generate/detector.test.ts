@@ -89,4 +89,32 @@ describe('detectColumnTypes', () => {
     const result = detectColumnTypes(columns);
     expect(result.dateColumns).toContain('event_time');
   });
+
+  it('treats boolean columns as dimensions', () => {
+    const columns: DbtColumn[] = [
+      { name: 'is_active', data_type: 'boolean', description: '', hints: [] },
+      { name: 'has_purchased', data_type: 'bool', description: '', hints: [] },
+    ];
+    const result = detectColumnTypes(columns);
+    expect(result.dimensionColumns).toContain('is_active');
+    expect(result.dimensionColumns).toContain('has_purchased');
+  });
+
+  it('treats unknown types as dimensions', () => {
+    const columns: DbtColumn[] = [
+      { name: 'metadata', data_type: 'jsonb', description: '', hints: [] },
+      { name: 'user_uuid', data_type: 'uuid', description: '', hints: [] },
+    ];
+    const result = detectColumnTypes(columns);
+    expect(result.dimensionColumns).toContain('metadata');
+    expect(result.dimensionColumns).toContain('user_uuid');
+  });
+
+  it('handles missing data_type', () => {
+    const columns: DbtColumn[] = [
+      { name: 'some_column', description: '', hints: [] },
+    ];
+    const result = detectColumnTypes(columns);
+    expect(result.dimensionColumns).toContain('some_column');
+  });
 });

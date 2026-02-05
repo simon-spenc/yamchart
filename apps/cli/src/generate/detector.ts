@@ -11,6 +11,7 @@ export interface DetectedColumns {
 const DATE_TYPES = ['date', 'timestamp', 'datetime', 'timestamptz', 'timestamp_ntz'];
 const NUMERIC_TYPES = ['int', 'integer', 'bigint', 'smallint', 'numeric', 'decimal', 'float', 'double', 'real', 'number'];
 const STRING_TYPES = ['string', 'varchar', 'char', 'text'];
+const BOOLEAN_TYPES = ['boolean', 'bool', 'bit'];
 
 function isDateColumn(col: DbtColumn): boolean {
   const typeLower = (col.data_type || '').toLowerCase();
@@ -28,6 +29,11 @@ function isNumericColumn(col: DbtColumn): boolean {
 function isStringColumn(col: DbtColumn): boolean {
   const typeLower = (col.data_type || '').toLowerCase();
   return STRING_TYPES.some(t => typeLower.includes(t));
+}
+
+function isBooleanColumn(col: DbtColumn): boolean {
+  const typeLower = (col.data_type || '').toLowerCase();
+  return BOOLEAN_TYPES.some(t => typeLower.includes(t));
 }
 
 function isPrimaryKey(col: DbtColumn): boolean {
@@ -61,7 +67,8 @@ export function detectColumnTypes(columns: DbtColumn[]): DetectedColumns {
       dateColumns.push(col.name);
     } else if (isNumericColumn(col)) {
       metricColumns.push(col.name);
-    } else if (isStringColumn(col)) {
+    } else {
+      // String, boolean, or unknown types all become dimensions
       dimensionColumns.push(col.name);
     }
   }
