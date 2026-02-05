@@ -18,6 +18,7 @@ Last updated: 2026-02-04
 | - | Interactive Filters | ✅ Complete |
 | - | PostgreSQL Connector | ✅ Complete |
 | - | Connection Testing | ✅ Complete |
+| - | Export Features | ✅ Complete |
 | - | NPM Publishing | ✅ Complete |
 | - | Open Source Distribution | ✅ Complete |
 
@@ -140,6 +141,14 @@ Last updated: 2026-02-04
 - [x] Proper error handling for pg library errors (ECONNREFUSED, EAGAIN, etc.)
 - [x] Tested with DuckDB and PostgreSQL connections
 
+### Export Features ✅
+
+- [x] CSV data export
+- [x] PNG image export
+- [x] SVG vector export
+- [x] PDF document export
+- [x] ChartActions dropdown menu with export options
+
 ### NPM Publishing ✅
 **Plan:** `2026-02-03-npm-publishing.md`
 
@@ -167,13 +176,11 @@ Last updated: 2026-02-04
 
 2. **More Chart Types** - Heatmap, gauge, funnel, sankey, treemap
 
-3. **Export Features** - PDF export, PNG export, CSV data export
+3. **Scheduled Refreshes** - Auto-refresh dashboards on interval
 
-4. **Scheduled Refreshes** - Auto-refresh dashboards on interval
+4. **Embedding** - Embed dashboards in external sites
 
-5. **Embedding** - Embed dashboards in external sites
-
-6. **Auth (Phase 6)** - If multi-user support is needed
+5. **Auth (Phase 6)** - If multi-user support is needed
 
 ---
 
