@@ -52,4 +52,41 @@ describe('detectColumnTypes', () => {
     const result = detectColumnTypes(columns);
     expect(result.dimensionColumns).not.toContain('user_id');
   });
+
+  it('detects all date type variants', () => {
+    const columns: DbtColumn[] = [
+      { name: 'col1', data_type: 'timestamp', description: '', hints: [] },
+      { name: 'col2', data_type: 'datetime', description: '', hints: [] },
+      { name: 'col3', data_type: 'timestamptz', description: '', hints: [] },
+      { name: 'col4', data_type: 'timestamp_ntz', description: '', hints: [] },
+    ];
+    const result = detectColumnTypes(columns);
+    expect(result.dateColumns).toHaveLength(4);
+  });
+
+  it('detects primary key by name "id"', () => {
+    const columns: DbtColumn[] = [
+      { name: 'id', data_type: 'integer', description: '', hints: [] },
+      { name: 'user_id', data_type: 'integer', description: '', hints: [] },
+    ];
+    const result = detectColumnTypes(columns);
+    expect(result.primaryKeys).toEqual(['id']);
+    expect(result.metricColumns).toContain('user_id');
+  });
+
+  it('detects primary key by unique hint', () => {
+    const columns: DbtColumn[] = [
+      { name: 'email', data_type: 'varchar', description: '', hints: ['unique'] },
+    ];
+    const result = detectColumnTypes(columns);
+    expect(result.primaryKeys).toEqual(['email']);
+  });
+
+  it('detects date columns by _time suffix', () => {
+    const columns: DbtColumn[] = [
+      { name: 'event_time', data_type: 'string', description: '', hints: [] },
+    ];
+    const result = detectColumnTypes(columns);
+    expect(result.dateColumns).toContain('event_time');
+  });
 });

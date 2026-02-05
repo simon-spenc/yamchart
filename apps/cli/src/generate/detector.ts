@@ -10,7 +10,7 @@ export interface DetectedColumns {
 
 const DATE_TYPES = ['date', 'timestamp', 'datetime', 'timestamptz', 'timestamp_ntz'];
 const NUMERIC_TYPES = ['int', 'integer', 'bigint', 'smallint', 'numeric', 'decimal', 'float', 'double', 'real', 'number'];
-const STRING_TYPES = ['string', 'varchar', 'char', 'text', 'character varying'];
+const STRING_TYPES = ['string', 'varchar', 'char', 'text'];
 
 function isDateColumn(col: DbtColumn): boolean {
   const typeLower = (col.data_type || '').toLowerCase();
