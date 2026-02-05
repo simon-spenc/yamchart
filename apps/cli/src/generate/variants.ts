@@ -41,7 +41,7 @@ function generateHeader(modelName: string, variantName: string, description: str
 
 function generateMetricSelects(metrics: MetricColumn[]): string {
   return metrics
-    .map(m => `  ${m.aggregation.toUpperCase()}(${quoteIdentifier(m.name)}) AS ${m.aggregation}_${m.name}`)
+    .map(m => `  ${m.aggregation.toUpperCase()}(${quoteIdentifier(m.name)}) AS ${quoteIdentifier(m.aggregation + '_' + m.name)}`)
     .join(',\n');
 }
 
