@@ -137,7 +137,8 @@ Last updated: 2026-02-04
 - [x] `GET /api/connections/status` - Test all connections
 - [x] `GET /api/connections/:name/status` - Test single connection
 - [x] Returns health status, latency, and error messages
-- [x] Uses existing `testConnection` from connector-factory
+- [x] Proper error handling for pg library errors (ECONNREFUSED, EAGAIN, etc.)
+- [x] Tested with DuckDB and PostgreSQL connections
 
 ### NPM Publishing ✅
 **Plan:** `2026-02-03-npm-publishing.md`
@@ -194,6 +195,12 @@ Last updated: 2026-02-04
   - Copies `{{chartName}}` for use in markdown widgets
 - **Date range filters** on all standalone chart pages
 - Example: Revenue by Region donut chart
+
+### Connection Testing
+- `GET /api/connections/status` - Test all database connections
+- `GET /api/connections/:name/status` - Test single connection
+- Returns health status, latency (ms), and error messages
+- Proper error handling for pg errors (ECONNREFUSED, EAGAIN, etc.)
 
 ### Bug Fixes (v0.1.3)
 - Fixed y-axis label spacing on line/bar charts
