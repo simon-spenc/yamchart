@@ -31,6 +31,13 @@ function strftimeToDateFns(strftimeFormat: string): string {
     .replace(/%P/g, 'a');      // am/pm
 }
 
+// Format date as quarter (Q1 '25)
+function formatQuarter(date: Date): string {
+  const quarter = Math.floor(date.getMonth() / 3) + 1;
+  const year = date.getFullYear().toString().slice(-2);
+  return `Q${quarter} '${year}`;
+}
+
 export const LineChart = forwardRef<EChartHandle, LineChartProps>(function LineChart(
   { data, xAxis, yAxis, height = 400, loading = false },
   ref
@@ -41,6 +48,10 @@ export const LineChart = forwardRef<EChartHandle, LineChartProps>(function LineC
     if (xAxis.type === 'temporal' && typeof value === 'string') {
       try {
         const date = parseISO(value);
+        // Special handling for quarter format
+        if (xAxis.format === 'quarter') {
+          return formatQuarter(date);
+        }
         const dateFormat = xAxis.format
           ? strftimeToDateFns(xAxis.format)
           : 'MMM yyyy';
@@ -87,15 +98,22 @@ export const LineChart = forwardRef<EChartHandle, LineChartProps>(function LineC
       },
     },
     grid: {
-      left: '12%',
+      left: '3%',
       right: '4%',
-      bottom: '3%',
+      bottom: '10%',
       top: '10%',
       containLabel: true,
     },
     xAxis: {
       type: 'category',
       data: xValues as string[],
+      name: xAxis.label,
+      nameLocation: 'middle',
+      nameGap: 30,
+      nameTextStyle: {
+        color: '#6B7280',
+        fontSize: 12,
+      },
       axisLabel: {
         color: '#6B7280',
         fontSize: 12,
@@ -111,7 +129,7 @@ export const LineChart = forwardRef<EChartHandle, LineChartProps>(function LineC
       type: 'value',
       name: yAxis.label,
       nameLocation: 'middle',
-      nameGap: 70,
+      nameGap: 80,
       nameTextStyle: {
         color: '#6B7280',
         fontSize: 12,

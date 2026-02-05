@@ -29,6 +29,12 @@ function strftimeToDateFns(strftimeFormat: string): string {
     .replace(/%P/g, 'a');
 }
 
+function formatQuarter(date: Date): string {
+  const quarter = Math.floor(date.getMonth() / 3) + 1;
+  const year = date.getFullYear().toString().slice(-2);
+  return `Q${quarter} '${year}`;
+}
+
 export const AreaChart = forwardRef<EChartHandle, AreaChartProps>(function AreaChart(
   { data, xAxis, yAxis, height = 400, loading = false },
   ref
@@ -38,6 +44,9 @@ export const AreaChart = forwardRef<EChartHandle, AreaChartProps>(function AreaC
     if (xAxis.type === 'temporal' && typeof value === 'string') {
       try {
         const date = parseISO(value);
+        if (xAxis.format === 'quarter') {
+          return formatQuarter(date);
+        }
         const dateFormat = xAxis.format
           ? strftimeToDateFns(xAxis.format)
           : 'MMM yyyy';

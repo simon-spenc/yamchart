@@ -3,6 +3,7 @@ import { forwardRef } from 'react';
 import { EChart } from './EChart';
 import type { EChartHandle } from './EChart';
 import type { AxisConfig } from '../../api/types';
+import { format, parseISO } from 'date-fns';
 
 interface BarChartProps {
   data: Array<Record<string, unknown>>;
@@ -13,11 +14,50 @@ interface BarChartProps {
   horizontal?: boolean;
 }
 
+function strftimeToDateFns(strftimeFormat: string): string {
+  return strftimeFormat
+    .replace(/%Y/g, 'yyyy')
+    .replace(/%y/g, 'yy')
+    .replace(/%m/g, 'MM')
+    .replace(/%b/g, 'MMM')
+    .replace(/%B/g, 'MMMM')
+    .replace(/%d/g, 'dd')
+    .replace(/%H/g, 'HH')
+    .replace(/%I/g, 'hh')
+    .replace(/%M/g, 'mm')
+    .replace(/%S/g, 'ss')
+    .replace(/%p/g, 'a')
+    .replace(/%P/g, 'a');
+}
+
+function formatQuarter(date: Date): string {
+  const quarter = Math.floor(date.getMonth() / 3) + 1;
+  const year = date.getFullYear().toString().slice(-2);
+  return `Q${quarter} '${year}`;
+}
+
 export const BarChart = forwardRef<EChartHandle, BarChartProps>(function BarChart(
   { data, xAxis, yAxis, height = 400, loading = false, horizontal = false },
   ref
 ) {
-  const xValues = data.map((row) => String(row[xAxis.field] ?? ''));
+  const xValues = data.map((row) => {
+    const value = row[xAxis.field];
+    if (xAxis.type === 'temporal' && typeof value === 'string') {
+      try {
+        const date = parseISO(value);
+        if (xAxis.format === 'quarter') {
+          return formatQuarter(date);
+        }
+        const dateFormat = xAxis.format
+          ? strftimeToDateFns(xAxis.format)
+          : 'MMM yyyy';
+        return format(date, dateFormat);
+      } catch {
+        return String(value ?? '');
+      }
+    }
+    return String(value ?? '');
+  });
   const yValues = data.map((row) => {
     const value = row[yAxis.field];
     return typeof value === 'number' ? value : parseFloat(String(value)) || 0;
@@ -52,9 +92,9 @@ export const BarChart = forwardRef<EChartHandle, BarChartProps>(function BarChar
       },
     },
     grid: {
-      left: '12%',
+      left: '3%',
       right: '4%',
-      bottom: '3%',
+      bottom: '10%',
       top: '10%',
       containLabel: true,
     },
@@ -72,6 +112,10 @@ export const BarChart = forwardRef<EChartHandle, BarChartProps>(function BarChar
       : {
           type: 'category',
           data: xValues,
+          name: xAxis.label,
+          nameLocation: 'middle',
+          nameGap: 30,
+          nameTextStyle: { color: '#6B7280', fontSize: 12 },
           axisLabel: { color: '#6B7280', fontSize: 12 },
           axisLine: { lineStyle: { color: '#E5E7EB' } },
           axisTick: { show: false },
@@ -88,7 +132,7 @@ export const BarChart = forwardRef<EChartHandle, BarChartProps>(function BarChar
           type: 'value',
           name: yAxis.label,
           nameLocation: 'middle',
-          nameGap: 70,
+          nameGap: 80,
           nameTextStyle: { color: '#6B7280', fontSize: 12 },
           axisLabel: {
             color: '#6B7280',
