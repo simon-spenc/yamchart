@@ -17,6 +17,7 @@ Last updated: 2026-02-04
 | - | Init Command | ✅ Complete |
 | - | Interactive Filters | ✅ Complete |
 | - | PostgreSQL Connector | ✅ Complete |
+| - | Connection Testing | ✅ Complete |
 | - | NPM Publishing | ✅ Complete |
 | - | Open Source Distribution | ✅ Complete |
 
@@ -131,6 +132,13 @@ Last updated: 2026-02-04
 - [x] EXPLAIN validation
 - [x] Unit tests
 
+### Connection Testing ✅
+
+- [x] `GET /api/connections/status` - Test all connections
+- [x] `GET /api/connections/:name/status` - Test single connection
+- [x] Returns health status, latency, and error messages
+- [x] Uses existing `testConnection` from connector-factory
+
 ### NPM Publishing ✅
 **Plan:** `2026-02-03-npm-publishing.md`
 
@@ -154,19 +162,17 @@ Last updated: 2026-02-04
 
 ### Potential Future Work
 
-1. **Connection Testing** - TODO in `apps/server/src/routes/config.ts:50` (connection validation doesn't actually test the connection)
+1. **More Database Connectors** - MySQL, SQLite, BigQuery, Snowflake
 
-2. **More Database Connectors** - MySQL, SQLite, BigQuery, Snowflake
+2. **More Chart Types** - Heatmap, gauge, funnel, sankey, treemap
 
-3. **More Chart Types** - Heatmap, gauge, funnel, sankey, treemap
+3. **Export Features** - PDF export, PNG export, CSV data export
 
-4. **Export Features** - PDF export, PNG export, CSV data export
+4. **Scheduled Refreshes** - Auto-refresh dashboards on interval
 
-5. **Scheduled Refreshes** - Auto-refresh dashboards on interval
+5. **Embedding** - Embed dashboards in external sites
 
-6. **Embedding** - Embed dashboards in external sites
-
-7. **Auth (Phase 6)** - If multi-user support is needed
+6. **Auth (Phase 6)** - If multi-user support is needed
 
 ---
 
