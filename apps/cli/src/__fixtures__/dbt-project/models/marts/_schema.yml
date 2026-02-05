@@ -1,0 +1,39 @@
+version: 2
+models:
+  - name: orders
+    description: "Daily order transactions"
+    meta:
+      yamchart: true
+    tags:
+      - bi
+      - finance
+    columns:
+      - name: order_id
+        description: "Unique order identifier"
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "FK to customers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: id
+      - name: total_amount
+        description: "Order total in USD"
+        data_type: numeric
+
+  - name: customers
+    description: "Customer dimension table"
+    tags:
+      - bi
+    columns:
+      - name: id
+        description: "Customer ID"
+        tests:
+          - unique
+          - not_null
+      - name: region
+        description: "Customer region"
