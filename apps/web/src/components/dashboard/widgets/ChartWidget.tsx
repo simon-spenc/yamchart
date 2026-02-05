@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useChart, useChartData, useRefreshChart } from '../../../hooks';
+import { useChartWithData, useRefreshChart } from '../../../hooks';
 import { useFilterStore } from '../../../stores/filterStore';
 import { KpiWidget } from './KpiWidget';
 import {
@@ -22,8 +22,10 @@ interface ChartWidgetProps {
 }
 
 export function ChartWidget({ chartRef }: ChartWidgetProps) {
-  const { data: chartConfig, isLoading: isLoadingConfig } = useChart(chartRef);
-  const { data: chartData, isLoading: isLoadingData, isFetching } = useChartData(chartRef);
+  // Use combined hook - fetches config + data in single request
+  const { data, isLoading, isFetching } = useChartWithData(chartRef);
+  const chartConfig = data?.config;
+  const chartData = data;
   const refreshChart = useRefreshChart();
   const echartRef = useRef<EChartHandle>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -70,15 +72,15 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
     }
   };
 
-  if (isLoadingConfig) {
+  if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+        <div className="animate-pulse bg-gray-100 w-full h-full rounded" />
       </div>
     );
   }
 
-  if (!chartConfig) {
+  if (!chartConfig || !chartData) {
     return (
       <div className="h-full flex items-center justify-center text-gray-400 text-sm">
         Chart not found: {chartRef}
@@ -89,15 +91,6 @@ export function ChartWidget({ chartRef }: ChartWidgetProps) {
   // Check if this is a KPI chart
   if (chartConfig.chart?.type === 'kpi') {
     return <KpiWidget chartRef={chartRef} />;
-  }
-
-  // Regular chart - render in compact mode (no header, fills container)
-  if (isLoadingData || !chartData) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="animate-pulse bg-gray-100 w-full h-full rounded" />
-      </div>
-    );
   }
 
   const isEChartType = ['line', 'bar', 'area', 'pie', 'donut', 'scatter'].includes(chartConfig.chart.type);

@@ -53,11 +53,22 @@ export const api = {
 
   queryChart: (
     name: string,
-    params: Record<string, unknown> = {}
+    params: Record<string, unknown> = {},
+    options: { includeConfig?: boolean } = {}
   ): Promise<QueryResponse> =>
-    fetchJson(`/charts/${encodeURIComponent(name)}/query`, {
+    fetchJson(`/charts/${encodeURIComponent(name)}/query${options.includeConfig ? '?includeConfig=true' : ''}`, {
       method: 'POST',
       body: JSON.stringify(params),
+    }),
+
+  // Batch query multiple charts in one request
+  queryChartsBatch: (
+    charts: Array<{ name: string; params?: Record<string, unknown> }>,
+    options: { includeConfig?: boolean } = {}
+  ): Promise<{ results: QueryResponse[] }> =>
+    fetchJson('/charts/batch', {
+      method: 'POST',
+      body: JSON.stringify({ charts, includeConfig: options.includeConfig }),
     }),
 
   invalidateChart: (name: string): Promise<{ success: boolean }> =>

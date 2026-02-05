@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { api } from '../api/client';
 import { useFilterStore } from '../stores/filterStore';
 
@@ -29,6 +29,33 @@ export function useChartData(chartName: string) {
   });
 }
 
+/**
+ * Combined hook that fetches chart config + data in a single request.
+ * More efficient than separate useChart + useChartData calls.
+ */
+export function useChartWithData(chartName: string) {
+  const globalFilters = useFilterStore((s) => s.globalFilters);
+  const chartFilters = useFilterStore((s) => s.chartFilters);
+
+  const filters = useMemo(() => ({
+    ...globalFilters,
+    ...chartFilters[chartName],
+  }), [globalFilters, chartFilters, chartName]);
+
+  const cleanFilters = useMemo(() =>
+    Object.fromEntries(
+      Object.entries(filters).filter(([_, v]) => v != null)
+    ),
+    [filters]
+  );
+
+  return useQuery({
+    queryKey: ['chartWithData', chartName, cleanFilters],
+    queryFn: () => api.queryChart(chartName, cleanFilters, { includeConfig: true }),
+    enabled: !!chartName,
+  });
+}
+
 export function useInvalidateChart() {
   const queryClient = useQueryClient();
 
@@ -45,8 +72,12 @@ export function useRefreshChart() {
   const queryClient = useQueryClient();
 
   return (chartName: string) => {
+    // Invalidate both old and new query patterns
     queryClient.invalidateQueries({
       queryKey: ['chartData', chartName],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['chartWithData', chartName],
     });
   };
 }

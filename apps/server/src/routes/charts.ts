@@ -34,13 +34,15 @@ export async function chartRoutes(
     }
   );
 
-  // Execute chart query
+  // Execute chart query (with optional config inclusion)
   fastify.post<{
     Params: { name: string };
     Body: Record<string, unknown>;
+    Querystring: { includeConfig?: string };
   }>('/api/charts/:name/query', async (request, reply) => {
     const { name } = request.params;
     const params = request.body ?? {};
+    const includeConfig = request.query.includeConfig === 'true';
 
     const chart = configLoader.getChartByName(name);
     if (!chart) {
@@ -50,7 +52,7 @@ export async function chartRoutes(
     try {
       const result = await queryService.executeChart(chart, params);
 
-      return {
+      const response: Record<string, unknown> = {
         columns: result.columns,
         rows: result.rows,
         meta: {
@@ -60,10 +62,78 @@ export async function chartRoutes(
           cacheKey: result.cacheKey,
         },
       };
+
+      // Include chart config if requested (reduces round trips)
+      if (includeConfig) {
+        response.config = {
+          name: chart.name,
+          title: chart.title,
+          description: chart.description,
+          parameters: chart.parameters ?? [],
+          chart: chart.chart,
+        };
+      }
+
+      return response;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Query execution failed';
       return reply.status(500).send({ error: message });
     }
+  });
+
+  // Batch query multiple charts
+  fastify.post<{
+    Body: {
+      charts: Array<{ name: string; params?: Record<string, unknown> }>;
+      includeConfig?: boolean;
+    };
+  }>('/api/charts/batch', async (request, reply) => {
+    const { charts, includeConfig } = request.body;
+
+    if (!charts || !Array.isArray(charts)) {
+      return reply.status(400).send({ error: 'charts array is required' });
+    }
+
+    const results = await Promise.all(
+      charts.map(async ({ name, params = {} }) => {
+        const chart = configLoader.getChartByName(name);
+        if (!chart) {
+          return { name, error: `Chart not found: ${name}` };
+        }
+
+        try {
+          const result = await queryService.executeChart(chart, params);
+
+          const response: Record<string, unknown> = {
+            name,
+            columns: result.columns,
+            rows: result.rows,
+            meta: {
+              cached: result.cached,
+              durationMs: result.durationMs,
+              rowCount: result.rowCount,
+            },
+          };
+
+          if (includeConfig) {
+            response.config = {
+              name: chart.name,
+              title: chart.title,
+              description: chart.description,
+              parameters: chart.parameters ?? [],
+              chart: chart.chart,
+            };
+          }
+
+          return response;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Query failed';
+          return { name, error: message };
+        }
+      })
+    );
+
+    return { results };
   });
 
   // Invalidate chart cache

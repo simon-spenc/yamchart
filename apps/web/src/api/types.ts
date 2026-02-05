@@ -16,6 +16,9 @@ export interface QueryResponse {
   columns: Column[];
   rows: Array<Record<string, unknown>>;
   meta: QueryMeta;
+  config?: ChartDefinition; // Included when ?includeConfig=true
+  name?: string; // Included in batch responses
+  error?: string; // Included in batch responses for failed queries
 }
 
 export interface ParameterSource {
