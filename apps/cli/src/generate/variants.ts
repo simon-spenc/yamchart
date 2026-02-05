@@ -24,6 +24,12 @@ function formatDate(): string {
   return new Date().toISOString().split('T')[0];
 }
 
+function quoteIdentifier(name: string): string {
+  // Double quotes for ANSI SQL standard
+  // Escape any existing double quotes by doubling them
+  return `"${name.replace(/"/g, '""')}"`;
+}
+
 function generateHeader(modelName: string, variantName: string, description: string, tableName: string): string {
   return `-- @generated: from dbt model '${modelName}' on ${formatDate()}
 -- @name: ${variantName}
@@ -35,7 +41,7 @@ function generateHeader(modelName: string, variantName: string, description: str
 
 function generateMetricSelects(metrics: MetricColumn[]): string {
   return metrics
-    .map(m => `  ${m.aggregation.toUpperCase()}(${m.name}) AS ${m.aggregation}_${m.name}`)
+    .map(m => `  ${m.aggregation.toUpperCase()}(${quoteIdentifier(m.name)}) AS ${m.aggregation}_${m.name}`)
     .join(',\n');
 }
 
@@ -48,11 +54,11 @@ export function generateVariants(config: VariantConfig): GeneratedVariant[] {
     const name = `${modelName}_over_time`;
     const description = `${modelName} aggregated over time`;
     const sql = `${generateHeader(modelName, name, description, tableName)}SELECT
-  date_trunc('{{ granularity }}', ${dateColumn}) AS period,
+  date_trunc('{{ granularity }}', ${quoteIdentifier(dateColumn)}) AS period,
 ${generateMetricSelects(metricColumns)}
 FROM ${tableName}
-WHERE ${dateColumn} >= '{{ start_date }}'
-  AND ${dateColumn} <= '{{ end_date }}'
+WHERE ${quoteIdentifier(dateColumn)} >= '{{ start_date }}'
+  AND ${quoteIdentifier(dateColumn)} <= '{{ end_date }}'
 GROUP BY 1
 ORDER BY 1
 `;
@@ -65,13 +71,13 @@ ORDER BY 1
     const description = `${modelName} grouped by ${dim}`;
     let sql = generateHeader(modelName, name, description, tableName);
     sql += `SELECT
-  ${dim},
+  ${quoteIdentifier(dim)},
 ${generateMetricSelects(metricColumns)}
 FROM ${tableName}
 `;
     if (dateColumn) {
-      sql += `WHERE ${dateColumn} >= '{{ start_date }}'
-  AND ${dateColumn} <= '{{ end_date }}'
+      sql += `WHERE ${quoteIdentifier(dateColumn)} >= '{{ start_date }}'
+  AND ${quoteIdentifier(dateColumn)} <= '{{ end_date }}'
 `;
     }
     sql += `GROUP BY 1
@@ -90,8 +96,8 @@ ${generateMetricSelects(metricColumns)}
 FROM ${tableName}
 `;
     if (dateColumn) {
-      sql += `WHERE ${dateColumn} >= '{{ start_date }}'
-  AND ${dateColumn} <= '{{ end_date }}'
+      sql += `WHERE ${quoteIdentifier(dateColumn)} >= '{{ start_date }}'
+  AND ${quoteIdentifier(dateColumn)} <= '{{ end_date }}'
 `;
     }
     variants.push({ name, filename: `${name}.sql`, description, sql });

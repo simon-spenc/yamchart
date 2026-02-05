@@ -14,8 +14,8 @@ describe('generateVariants', () => {
 
     const timeSeries = variants.find(v => v.name === 'orders_over_time');
     expect(timeSeries).toBeDefined();
-    expect(timeSeries?.sql).toContain("date_trunc('{{ granularity }}'");
-    expect(timeSeries?.sql).toContain('SUM(amount)');
+    expect(timeSeries?.sql).toContain("date_trunc('{{ granularity }}', \"order_date\")");
+    expect(timeSeries?.sql).toContain('SUM("amount")');
   });
 
   it('generates dimension variant for each dimension', () => {
@@ -70,7 +70,7 @@ describe('generateVariants', () => {
     };
     const variants = generateVariants(config);
 
-    expect(variants[0].sql).toContain('AVG(price)');
+    expect(variants[0].sql).toContain('AVG("price")');
   });
 
   it('skips time series when no date column', () => {
