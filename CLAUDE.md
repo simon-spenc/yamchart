@@ -15,7 +15,7 @@ TypeScript monorepo with pnpm + Turborepo:
 ```
 yamchart/
 ├── apps/
-│   ├── cli/        # CLI tool (yamchart validate, dev, init)
+│   ├── cli/        # CLI tool (validate, dev, init, sync-dbt, generate)
 │   ├── server/     # Fastify API server
 │   └── web/        # React + Vite dashboard viewer
 ├── packages/
@@ -45,10 +45,12 @@ pnpm --filter @yamchart/web dev       # Web only (port 5173)
 pnpm --filter @yamchart/server test   # Run server tests
 ```
 
-**dbt sync:**
+**dbt integration:**
 ```bash
-yamchart sync-dbt --path ../dbt-project  # Sync dbt metadata
+yamchart sync-dbt --path ../dbt-project  # Sync dbt metadata to .yamchart/catalog.md
 yamchart sync-dbt --refresh              # Re-sync with saved config
+yamchart generate                        # Interactive wizard to create model stubs
+yamchart generate --yolo                 # Batch generate all stubs with defaults
 ```
 
 ## Technology Stack
@@ -117,6 +119,7 @@ Optional (for auth/billing features):
 - `dashboards.md` - Layout, widgets, KPI references, filter overrides
 - `models.md` - SQL with Jinja templating, date patterns
 - `connections.md` - DuckDB/PostgreSQL configuration
+- `dbt-sync.md` - Sync dbt project metadata for AI assistance
 
 **Design documents:**
 - `docs/plans/2026-01-31-mvp-architecture-design.md` - Full MVP architecture design

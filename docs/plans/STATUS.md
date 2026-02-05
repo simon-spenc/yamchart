@@ -24,6 +24,8 @@ Last updated: 2026-02-04
 | - | Snowflake Connector | ✅ Complete |
 | - | NPM Publishing | ✅ Complete |
 | - | Open Source Distribution | ✅ Complete |
+| - | dbt Sync | ✅ Complete |
+| - | Generate Command | ✅ Complete |
 
 ---
 
@@ -184,7 +186,22 @@ Last updated: 2026-02-04
 - [x] npm publish automation on tags
 - [x] Docker image publish to GHCR
 
+### dbt Sync ✅
+**Plans:** `2026-02-04-sync-dbt-design.md`, `2026-02-04-sync-dbt-implementation.md`
+
+- [x] `yamchart sync-dbt` command
+- [x] Parse dbt schema.yml files (not manifest.json)
+- [x] Extract model/column metadata with hints from dbt tests
+- [x] Smart default filters (marts/reporting included, staging excluded)
+- [x] Tag-based filtering (`--tag`)
+- [x] Include/exclude glob patterns
+- [x] Generate `.yamchart/catalog.md` (AI-readable)
+- [x] Generate `.yamchart/catalog.json` (structured)
+- [x] Save sync config for `--refresh` re-runs
+- [x] Cross-reference yamchart models to dbt tables
+
 ### Generate Command ✅
+**Plans:** `2026-02-04-generate-command-design.md`, `2026-02-04-generate-command-implementation.md`
 
 - [x] Column type detector (date, metric, dimension detection)
 - [x] Variant generator (time series, dimensional, KPI stubs)
@@ -219,6 +236,21 @@ Last updated: 2026-02-04
 ---
 
 ## Recent Changes (2026-02-04)
+
+### v0.1.4 - dbt Integration
+- **`yamchart sync-dbt`** - Sync dbt project metadata into AI-readable catalog
+  - Parses dbt schema.yml files to extract model/column metadata
+  - Converts dbt tests to hints (unique, not_null → required, relationships → fk:table)
+  - Smart filtering: includes marts/reporting, excludes staging by default
+  - Generates `.yamchart/catalog.md` for AI tools (Claude Code, Cursor)
+  - Supports `--include`, `--exclude`, `--tag` filters
+  - Saves config for `--refresh` re-runs
+- **`yamchart generate`** - Generate SQL model stubs from dbt catalog
+  - Interactive wizard to confirm column detection assumptions
+  - Generates time series (`_over_time`), dimensional (`_by_X`), and KPI stubs
+  - `--yolo` flag for batch generation with defaults
+  - Smart column detection (date, metric, dimension, primary/foreign keys)
+  - Generated stubs include `@generated` metadata for AI context
 
 ### v0.1.3 - Chart Enhancements
 - **Donut chart type** with configurable center value/label display
