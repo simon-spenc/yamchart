@@ -3,6 +3,7 @@ import {
   DbtColumnSchema,
   DbtModelSchema,
   DbtProjectConfigSchema,
+  DbtSourceConfigSchema,
   type DbtColumn,
   type DbtModel,
 } from '../../dbt/types.js';
@@ -62,5 +63,26 @@ describe('DbtProjectConfigSchema', () => {
       target_path: 'target',
     });
     expect(result.success).toBe(true);
+  });
+});
+
+describe('DbtSourceConfigSchema', () => {
+  it('parses sync config', () => {
+    const result = DbtSourceConfigSchema.safeParse({
+      source: 'local',
+      path: '../analytics-dbt',
+      lastSync: '2026-02-04T10:30:00Z',
+      filters: {
+        include: ['**/marts/**'],
+        exclude: ['**/staging/**'],
+        tags: ['bi'],
+      },
+      stats: {
+        modelsIncluded: 10,
+        modelsExcluded: 5,
+      },
+    });
+    expect(result.success).toBe(true);
+    expect(result.data?.source).toBe('local');
   });
 });
