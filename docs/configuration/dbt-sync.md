@@ -213,6 +213,30 @@ Add a sync step to your dbt CI:
     git push
 ```
 
+## Next Step: Generate Model Stubs
+
+After syncing, use the `generate` command to create SQL model stubs from your catalog:
+
+```bash
+# Interactive wizard - confirms assumptions for each model
+yamchart generate
+
+# Generate stubs for a specific model
+yamchart generate orders
+
+# Batch mode - use all defaults, no prompts
+yamchart generate --yolo
+```
+
+This creates SQL files in `models/` with:
+- **Time series** (`orders_over_time.sql`) - Aggregated by date with granularity support
+- **Dimensional** (`orders_by_category.sql`) - Grouped by categorical columns
+- **KPI** (`orders_kpi.sql`) - Summary metrics for KPI charts
+
+Each stub includes `@generated` metadata linking back to the dbt source, helping AI tools understand the data context when creating charts.
+
+See [Generate Command](./generate.md) for details.
+
 ## Future Sources
 
 Currently, only local dbt projects are supported. Coming soon:

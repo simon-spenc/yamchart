@@ -498,6 +498,7 @@ Each stub includes `@generated` comments linking back to the dbt source, helping
 - [SQL Models Reference](./configuration/models.md) - Jinja templating, parameters
 - [Connections Reference](./configuration/connections.md) - Database configuration
 - [dbt Sync](./configuration/dbt-sync.md) - Sync dbt metadata for AI assistance
+- [Generate Command](./configuration/generate.md) - Generate SQL model stubs from catalog
 
 ## Getting Help
 
