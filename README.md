@@ -9,6 +9,15 @@ title: Daily Revenue
 source:
   model: daily_revenue
 parameters:
+  - name: granularity
+    type: select
+    label: Group By
+    default: month
+    options:
+      - { value: day, label: Daily }
+      - { value: week, label: Weekly }
+      - { value: month, label: Monthly }
+      - { value: quarter, label: Quarterly }
   - name: date_range
     type: date_range
     default: last_30_days
@@ -80,6 +89,36 @@ fly deploy
 ```
 
 See [deployment docs](./docs/getting-started.md#deploy-with-docker) for more options.
+
+## Supported Chart Types
+
+| Type | Description |
+|------|-------------|
+| `line` | Time series and trends |
+| `bar` | Categorical comparisons |
+| `area` | Filled line charts |
+| `pie` | Part-to-whole |
+| `donut` | Pie with center value/label |
+| `scatter` | Correlations |
+| `table` | Tabular data |
+| `kpi` | Single metric with comparison |
+
+### Donut Chart Example
+
+```yaml
+chart:
+  type: donut
+  x:
+    field: category
+    type: nominal
+  y:
+    field: value
+    format: "$,.0f"
+  centerValue:
+    field: total      # 'total' sums all values
+    label: Total Sales
+    format: "$"
+```
 
 ## Supported Databases
 

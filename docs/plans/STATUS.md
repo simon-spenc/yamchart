@@ -56,7 +56,7 @@ Last updated: 2026-02-04
 - [x] React + Vite setup
 - [x] ECharts integration
 - [x] React Query for data fetching
-- [x] Chart components (line, bar, area, pie)
+- [x] Chart components (line, bar, area, pie, donut, scatter, table, metric, kpi)
 - [x] Responsive layout
 
 ### Phase 5: Docker Deployment ✅
@@ -158,7 +158,7 @@ Last updated: 2026-02-04
 
 2. **More Database Connectors** - MySQL, SQLite, BigQuery, Snowflake
 
-3. **Chart Types** - Scatter, heatmap, gauge, funnel
+3. **More Chart Types** - Heatmap, gauge, funnel, sankey, treemap
 
 4. **Export Features** - PDF export, PNG export, CSV data export
 
@@ -172,6 +172,28 @@ Last updated: 2026-02-04
 
 ## Recent Changes (2026-02-04)
 
+### v0.1.3 - Chart Enhancements
+- **Donut chart type** with configurable center value/label display
+  - `centerValue.field`: Use `'total'` for sum, or specific field name
+  - `centerValue.label`: Label displayed below value
+  - `centerValue.format`: Format string (`$`, `%`, etc.)
+- **Granularity selector** for time series charts (daily/weekly/monthly/quarterly)
+  - Dynamic x-axis labels based on granularity
+  - Smart date formatting (e.g., "Q1 '25" for quarters)
+- **Filter override controls** on dashboard chart widgets
+  - Click filter icon to set chart-specific filters
+  - "Filtered" badge shows when chart has custom filters
+  - "Reset to dashboard" button to clear overrides
+- **Copy Reference button** on standalone chart pages
+  - Copies `{{chartName}}` for use in markdown widgets
+- **Date range filters** on all standalone chart pages
+- Example: Revenue by Region donut chart
+
+### Bug Fixes (v0.1.3)
+- Fixed y-axis label spacing on line/bar charts
+- Added x-axis labels to line/bar/area charts
+- Fixed sample data date range to include current year
+
 ### KPI References in Markdown
 - Clickable KPI values with smart popover showing source details
 - Syntax: `{{chart}}`, `{{chart.field}}`, `{{chart@preset}}`, `{{chart@start..end}}`
@@ -179,10 +201,9 @@ Last updated: 2026-02-04
 - Smart popover positioning (flips above when near viewport bottom)
 - Blue styling with dashed underline to indicate interactive data
 
-### Bug Fixes
+### Bug Fixes (earlier)
 - Fixed KPI charts showing $0 (models now use correct date range from filters)
 - Fixed server not hot-reloading model changes (added `updateCompiler` method)
-- Fixed y-axis label overlapping with values on line/bar charts
 - Fixed date filter not setting default value in store on mount
 
 ### Earlier Today

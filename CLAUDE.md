@@ -21,8 +21,28 @@ yamchart/
 ├── packages/
 │   ├── schema/     # Zod schemas, shared TypeScript types
 │   ├── query/      # SQL compilation, Nunjucks templating
-│   └── config/     # Shared tsconfig, eslint configs
+│   ├── config/     # Shared tsconfig, eslint configs
+│   ├── auth/       # Authentication (Supabase)
+│   └── billing/    # Billing (Stripe)
 └── examples/       # Sample yamchart project with DuckDB
+```
+
+## Commands
+
+```bash
+pnpm install          # Install dependencies
+pnpm dev              # Start all apps in dev mode (server + web)
+pnpm build            # Build all packages and apps
+pnpm test             # Run all tests
+pnpm lint             # Lint all packages
+pnpm clean            # Remove dist folders and node_modules
+```
+
+**Individual apps:**
+```bash
+pnpm --filter @yamchart/server dev    # Server only (port 3001)
+pnpm --filter @yamchart/web dev       # Web only (port 5173)
+pnpm --filter @yamchart/server test   # Run server tests
 ```
 
 ## Technology Stack
@@ -53,7 +73,36 @@ Users create these files in their yamchart projects:
 - `connections/*.yaml` - data source definitions
 - `models/*.sql` - SQL with Jinja templating and metadata in comments
 - `charts/*.yaml` - chart definitions referencing models
-- `dashboards/*.yaml` - layout compositions (post-MVP)
+- `dashboards/*.yaml` - layout compositions
+
+## Supported Chart Types
+
+- `line`, `bar`, `area` - Time series with granularity selector (day/week/month/quarter)
+- `pie`, `donut` - Part-to-whole (donut supports center value/label)
+- `scatter` - Correlations
+- `table` - Tabular data display
+- `kpi` - Single metric with period comparison
+- `metric` - Simple value display
+
+## Key Features
+
+- **Granularity selector** - Time series charts support dynamic grouping (daily/weekly/monthly/quarterly) with automatic x-axis label formatting
+- **Filter overrides** - Dashboard charts can have independent filter settings
+- **KPI references** - Embed live values in markdown: `{{chartName}}`, `{{chart.field}}`, `{{chart@preset}}`
+- **Copy reference** - Standalone chart pages have button to copy markdown embed syntax
+
+## Environment Setup
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+YAMCHART_PROJECT_DIR=./examples  # Path to yamchart project with YAML/SQL files
+PORT=3001                         # Server port
+```
+
+Optional (for auth/billing features):
+- `SUPABASE_URL`, `SUPABASE_ANON_KEY` - Supabase authentication
+- `STRIPE_SECRET_KEY` - Billing integration
 
 ## Design Documents
 
