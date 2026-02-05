@@ -184,6 +184,14 @@ Last updated: 2026-02-04
 - [x] npm publish automation on tags
 - [x] Docker image publish to GHCR
 
+### Generate Command ✅
+
+- [x] Column type detector (date, metric, dimension detection)
+- [x] Variant generator (time series, dimensional, KPI stubs)
+- [x] Interactive prompts with smart defaults
+- [x] Stub file writer
+- [x] `--yolo` mode for batch generation
+
 ### Open Source Distribution ✅
 **Plans:** `2026-02-03-open-source-distribution-design.md`, `2026-02-03-open-source-distribution-implementation.md`
 

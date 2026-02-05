@@ -67,6 +67,9 @@ npx yamchart sync-dbt --path ../my-dbt-project --include "**/marts/**"
 
 # Re-sync with saved configuration
 npx yamchart sync-dbt --refresh
+
+# Generate model stubs from synced catalog
+npx yamchart generate --yolo
 ```
 
 This creates `.yamchart/catalog.md` - a human and AI-readable catalog of your dbt models, columns, and relationships. When using Claude Code, Cursor, or other AI tools, they'll understand your data schema.

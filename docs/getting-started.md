@@ -469,6 +469,28 @@ This creates `.yamchart/catalog.md` with your table names, column descriptions, 
 
 See [dbt Sync Configuration](./configuration/dbt-sync.md) for filtering options and advanced usage.
 
+## Generating Model Stubs
+
+After syncing dbt metadata, generate SQL model stubs to help AI tools write better charts:
+
+```bash
+# Interactive wizard - walks through each model
+yamchart generate
+
+# Generate for a specific model
+yamchart generate orders
+
+# Skip prompts, use all defaults
+yamchart generate --yolo
+```
+
+This creates SQL files in `models/` with:
+- Time series variants (`orders_over_time.sql`)
+- Dimension breakdowns (`orders_by_category.sql`)
+- KPI metrics (`orders_kpi.sql`)
+
+Each stub includes `@generated` comments linking back to the dbt source, helping AI tools understand the data context.
+
 ## Next Steps
 
 - [Chart Configuration Reference](./configuration/charts.md) - All chart types and options
